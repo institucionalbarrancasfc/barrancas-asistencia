@@ -136,7 +136,12 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
 .tab-btn{flex-shrink:0;background:var(--card);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;}
 .tab-btn.active{background:var(--red);border-color:var(--red);color:white;}
 
-/* YEAR/MONTH GROUPING */
+/* PLAYER MANAGEMENT */
+.player-mgmt-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.player-mgmt-name{font-weight:500;font-size:15px;}
+.btn-delete-player{background:rgba(255,68,68,0.1);border:1px solid rgba(255,68,68,0.3);color:var(--red-light);border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;flex-shrink:0;}
+.btn-delete-player:active{background:rgba(255,68,68,0.25);}
+.players-count{font-size:12px;color:var(--muted);padding:0 4px;margin-bottom:12px;}
 .group-year{margin-bottom:8px;}
 .year-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--red);border-radius:10px;cursor:pointer;margin-bottom:6px;}
 .year-label{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;}
@@ -241,6 +246,13 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
         <p>Revisá los registros anteriores de tu categoría</p>
       </div>
     </div>
+    <div class="home-card" id="btn-gestionar-jugadores">
+      <div class="home-card-icon gray">👥</div>
+      <div class="home-card-info">
+        <h4>GESTIONAR JUGADORES</h4>
+        <p>Agregá o eliminá jugadores de tu categoría</p>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -318,7 +330,41 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
   </div>
 </div>
 
-<!-- FAB -->
+<!-- GESTIONAR JUGADORES -->
+<div id="jugadores-screen" class="screen">
+  <div class="hist-header">
+    <button class="btn-back" id="btn-back-jugadores">← Volver</button>
+    <h2 id="jugadores-title">JUGADORES</h2>
+  </div>
+  <div class="hist-body" id="jugadores-body"></div>
+  <div style="padding:0 16px 24px;">
+    <button class="btn-save" id="btn-nuevo-jugador" style="font-size:16px;padding:14px;">+ AGREGAR JUGADOR</button>
+  </div>
+</div>
+
+<!-- Modal agregar jugador (coach) -->
+<div class="modal-overlay" id="add-modal-coach">
+  <div class="modal-box">
+    <h3>AGREGAR JUGADOR</h3>
+    <input type="text" id="new-player-name-coach" placeholder="Nombre completo">
+    <div class="modal-actions">
+      <button class="btn-cancel" id="btn-cancel-add-coach">Cancelar</button>
+      <button class="btn-confirm" id="btn-confirm-add-coach">AGREGAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal confirmar eliminar -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal-box">
+    <h3>ELIMINAR JUGADOR</h3>
+    <p style="color:var(--muted);font-size:14px;margin-bottom:20px;">¿Estás seguro que querés eliminar a <strong id="delete-player-name" style="color:var(--text)"></strong>? Esta acción no se puede deshacer.</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="btn-cancel-delete">Cancelar</button>
+      <button class="btn-confirm" id="btn-confirm-delete" style="background:#FF4444;">ELIMINAR</button>
+    </div>
+  </div>
+</div>
 <button class="fab" id="fab-add">+</button>
 
 <!-- Modal agregar jugador -->
@@ -338,7 +384,7 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, getDocs, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // ── Firebase ──────────────────────────────────────────────
 const db = getFirestore(initializeApp({
@@ -405,6 +451,12 @@ $('btn-save').addEventListener('click', saveAttendance);
 $('fab-add').addEventListener('click', () => { $('add-modal').classList.add('open'); $('new-player-name').focus(); });
 $('btn-cancel-add').addEventListener('click', () => { $('add-modal').classList.remove('open'); $('new-player-name').value=''; });
 $('btn-confirm-add').addEventListener('click', confirmAddPlayer);
+$('btn-gestionar-jugadores').addEventListener('click', showGestionarJugadores);
+$('btn-back-jugadores').addEventListener('click', () => showScreen('coach-home'));
+$('btn-nuevo-jugador').addEventListener('click', () => { $('new-player-name-coach').value=''; $('add-modal-coach').classList.add('open'); $('new-player-name-coach').focus(); });
+$('btn-cancel-add-coach').addEventListener('click', () => $('add-modal-coach').classList.remove('open'));
+$('btn-confirm-add-coach').addEventListener('click', confirmAddPlayerCoach);
+$('btn-cancel-delete').addEventListener('click', () => $('delete-modal').classList.remove('open'));
 $('btn-export-coach').addEventListener('click', () => buildExcel(coachHistorialRecords, `asistencia_${currentUser.catLabel.toLowerCase().replace(/\s/g,'_')}`));
 $('btn-export-admin').addEventListener('click', () => buildExcel(allAdminRecords, 'asistencia_barrancas_todas'));
 
@@ -752,20 +804,92 @@ function buildRecordCard(rec) {
   return group;
 }
 
-// ── ADD PLAYER ────────────────────────────────────────────
+// ── ADD PLAYER (ADMIN) ────────────────────────────────────
 async function confirmAddPlayer() {
   const name = $('new-player-name').value.trim();
   const catKey = $('new-player-cat').value;
   const catLabel = CATEGORIES.find(c=>c.key===catKey)?.label||catKey;
   if (!name||!catKey) return;
   try {
-    const docId = `${catKey}_${name.toLowerCase().replace(/\s+/g,'_')}`;
+    const docId = `${catKey}_${name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'')}`;
     await setDoc(doc(db,'players',docId),{name,category:catKey,categoryLabel:catLabel});
     $('add-modal').classList.remove('open');
     $('new-player-name').value='';
     showToast(`${name} agregado ✓`);
     await loadAdminRecords();
   } catch(e) { showToast('Error al agregar','#FF4444'); }
+}
+
+// ── GESTIONAR JUGADORES (COACH) ───────────────────────────
+let playerToDelete = null;
+
+async function showGestionarJugadores() {
+  showScreen('jugadores-screen');
+  const {catKey, catLabel} = currentUser;
+  $('jugadores-title').textContent = `JUGADORES — ${catLabel.toUpperCase()}`;
+  const body = $('jugadores-body');
+  body.innerHTML = '<div class="loading-msg"><span class="spinner"></span>Cargando...</div>';
+
+  // Reload players fresh
+  const snap = await getDocs(collection(db,'players'));
+  coachPlayers = [];
+  const playerDocs = {};
+  snap.forEach(d => {
+    if (d.data().category === catKey) {
+      coachPlayers.push(d.data().name);
+      playerDocs[d.data().name] = d.id;
+    }
+  });
+  coachPlayers.sort();
+
+  body.innerHTML = '';
+  if (coachPlayers.length === 0) {
+    body.innerHTML = '<div class="no-records">No hay jugadores en esta categoría todavía.</div>';
+    return;
+  }
+
+  body.innerHTML = `<div class="players-count">${coachPlayers.length} jugador${coachPlayers.length!==1?'es':''}</div>`;
+  coachPlayers.forEach(name => {
+    const card = document.createElement('div');
+    card.className = 'player-mgmt-card';
+    card.innerHTML = `
+      <span class="player-mgmt-name">${name}</span>
+      <button class="btn-delete-player" data-name="${name}" data-docid="${playerDocs[name]}">🗑 Eliminar</button>
+    `;
+    body.appendChild(card);
+  });
+
+  body.querySelectorAll('.btn-delete-player').forEach(btn => {
+    btn.addEventListener('click', () => {
+      playerToDelete = { name: btn.dataset.name, docId: btn.dataset.docid };
+      $('delete-player-name').textContent = btn.dataset.name;
+      $('delete-modal').classList.add('open');
+    });
+  });
+}
+
+async function confirmAddPlayerCoach() {
+  const name = $('new-player-name-coach').value.trim();
+  if (!name) return;
+  const { catKey, catLabel } = currentUser;
+  try {
+    const docId = `${catKey}_${name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'')}`;
+    await setDoc(doc(db,'players',docId), {name, category:catKey, categoryLabel:catLabel});
+    $('add-modal-coach').classList.remove('open');
+    showToast(`${name} agregado ✓`);
+    await showGestionarJugadores();
+  } catch(e) { showToast('Error al agregar','#FF4444'); }
+}
+
+async function confirmDeletePlayer() {
+  if (!playerToDelete) return;
+  try {
+    await deleteDoc(doc(db,'players', playerToDelete.docId));
+    $('delete-modal').classList.remove('open');
+    showToast(`${playerToDelete.name} eliminado`,'#888');
+    playerToDelete = null;
+    await showGestionarJugadores();
+  } catch(e) { showToast('Error al eliminar','#FF4444'); }
 }
 
 // ── EXPORT EXCEL ──────────────────────────────────────────
