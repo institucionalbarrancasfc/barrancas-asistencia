@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Barrancas FC — Asistencia</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red:#D42B2B; --red-dark:#A01E1E; --red-light:#FF4444;
+  --black:#0A0A0A; --dark:#141414; --card:#1C1C1C; --border:#2A2A2A;
+  --text:#F0F0F0; --muted:#888; --green:#22C55E; --yellow:#F59E0B;
+  --purple:#A855F7; --gray:#555;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
+.screen{display:none;min-height:100vh;flex-direction:column;}
+.screen.active{display:flex;}
+
+/* LOGIN */
+#login-screen{background:var(--black);align-items:center;justify-content:center;padding:24px;position:relative;overflow:hidden;}
+#login-screen::before{content:'BFC';font-family:'Bebas Neue',sans-serif;font-size:40vw;color:rgba(212,43,43,0.04);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;white-space:nowrap;}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px 24px;width:100%;max-width:380px;position:relative;z-index:1;}
+.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:28px;}
+.logo-badge{width:44px;height:44px;background:var(--red);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;flex-shrink:0;}
+.login-logo h1{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;line-height:1.1;}
+.login-logo p{font-size:12px;color:var(--muted);}
+.login-box label{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.login-box input{width:100%;background:var(--dark);border:1px solid var(--border);border-radius:10px;padding:14px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;letter-spacing:3px;outline:none;transition:border-color 0.2s;}
+.login-box input:focus{border-color:var(--red);}
+.login-box input::placeholder{letter-spacing:0;color:var(--gray);}
+.btn-primary{width:100%;background:var(--red);color:white;border:none;border-radius:10px;padding:15px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;margin-top:20px;-webkit-appearance:none;}
+.btn-primary:active{background:var(--red-dark);}
+.error-msg{color:var(--red-light);font-size:13px;margin-top:10px;text-align:center;min-height:18px;}
+.codes-hint{margin-top:20px;padding-top:20px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);text-align:center;line-height:1.6;}
+
+/* COACH HOME */
+#coach-home{background:var(--black);}
+.home-header{background:var(--card);border-bottom:1px solid var(--border);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;}
+.home-header-left{display:flex;align-items:center;gap:10px;}
+.cat-badge{background:var(--red);border-radius:8px;padding:4px 10px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;}
+.home-header h2{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;}
+.btn-logout{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.home-body{flex:1;padding:28px 20px;display:flex;flex-direction:column;gap:14px;}
+.home-greeting{margin-bottom:8px;}
+.home-greeting h3{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;line-height:1.1;}
+.home-greeting p{color:var(--muted);font-size:14px;margin-top:4px;}
+.home-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;cursor:pointer;display:flex;align-items:center;gap:16px;transition:border-color 0.2s;}
+.home-card:active{border-color:var(--red);}
+.home-card-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.home-card-icon.red{background:rgba(212,43,43,0.15);}
+.home-card-icon.gray{background:rgba(255,255,255,0.06);}
+.home-card-info h4{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;margin-bottom:3px;}
+.home-card-info p{font-size:13px;color:var(--muted);line-height:1.4;}
+
+/* DATE MODAL */
+.date-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:100;align-items:flex-end;justify-content:center;}
+.date-modal.open{display:flex;}
+.date-modal-box{background:var(--card);border-radius:20px 20px 0 0;padding:28px 24px 36px;width:100%;max-width:480px;}
+.date-modal-box h3{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:6px;}
+.date-modal-box p{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.date-modal-box label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.date-input-big{width:100%;background:var(--dark);border:1px solid var(--border);border-radius:12px;padding:16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;color-scheme:dark;margin-bottom:16px;}
+.date-input-big:focus{border-color:var(--red);}
+.date-quick{display:flex;gap:8px;margin-bottom:20px;}
+.quick-btn{flex:1;background:var(--dark);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 6px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:center;-webkit-appearance:none;}
+.quick-btn:active{border-color:var(--red);}
+.btn-go{width:100%;background:var(--red);color:white;border:none;border-radius:12px;padding:16px;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;cursor:pointer;-webkit-appearance:none;}
+.btn-go:active{background:var(--red-dark);}
+.btn-cancel-modal{width:100%;background:none;border:none;color:var(--muted);padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;margin-top:4px;}
+
+/* COACH ATTENDANCE */
+#coach-screen{background:var(--black);}
+.top-bar{background:var(--card);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+.top-bar-left{display:flex;align-items:center;gap:10px;}
+.top-bar h2{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;}
+.top-bar-right{display:flex;gap:8px;align-items:center;}
+.btn-back-home{background:none;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.date-banner{background:rgba(212,43,43,0.1);border-bottom:1px solid rgba(212,43,43,0.2);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;}
+.date-banner span{font-size:12px;color:var(--red-light);text-transform:uppercase;letter-spacing:1px;}
+.date-banner strong{font-size:14px;color:var(--text);}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
+.stat-cell{background:var(--dark);padding:10px;text-align:center;}
+.stat-cell .num{font-family:'Bebas Neue',sans-serif;font-size:22px;}
+.stat-cell .lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+.stat-cell.pres .num{color:var(--green);}
+.stat-cell.tard .num{color:var(--yellow);}
+.stat-cell.aus .num{color:var(--red-light);}
+.stat-cell.les .num{color:var(--purple);}
+.player-list{flex:1;padding:12px 16px;}
+.player-card{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;}
+.player-card.is-presente{border-left-color:var(--green);}
+.player-card.is-tarde{border-left-color:var(--yellow);}
+.player-card.is-ausente{border-left-color:var(--red-light);opacity:0.75;}
+.player-card.is-lesionado{border-left-color:var(--purple);opacity:0.75;}
+.player-num{width:32px;height:32px;border-radius:8px;background:var(--border);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--muted);flex-shrink:0;}
+.player-info{flex:1;min-width:0;}
+.player-name{font-weight:500;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.player-obs{font-size:12px;color:var(--muted);margin-top:2px;}
+.status-btns{display:flex;gap:5px;flex-shrink:0;}
+.sbtn{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:var(--dark);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;-webkit-appearance:none;}
+.sbtn:active{transform:scale(0.9);}
+.sbtn.active-p{background:var(--green);border-color:var(--green);}
+.sbtn.active-t{background:var(--yellow);border-color:var(--yellow);}
+.sbtn.active-a{background:var(--red);border-color:var(--red);}
+.sbtn.active-l{background:var(--purple);border-color:var(--purple);}
+.obs-row{display:none;padding:0 16px 10px 16px;margin-top:-4px;margin-bottom:4px;}
+.obs-row.show{display:block;}
+.obs-row input{width:100%;background:var(--dark);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;}
+.obs-row input:focus{border-color:var(--red);}
+.aviso-btns{display:flex;gap:8px;}
+.aviso-btn{flex:1;background:var(--dark);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:10px 8px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;-webkit-appearance:none;}
+.aviso-btn.active{background:rgba(212,43,43,0.2);border-color:var(--red);color:var(--text);}
+.save-bar{padding:16px;background:var(--card);border-top:1px solid var(--border);}
+.btn-save{width:100%;background:var(--red);color:white;border:none;border-radius:12px;padding:16px;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;cursor:pointer;-webkit-appearance:none;}
+.btn-save:active{background:var(--red-dark);}
+.btn-save:disabled{background:var(--border);color:var(--muted);cursor:default;}
+.save-msg{text-align:center;font-size:13px;margin-top:8px;min-height:18px;}
+
+/* HISTORIAL */
+#historial-screen{background:var(--black);}
+.hist-header{background:var(--card);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10;}
+.btn-back{background:none;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.hist-header h2{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;}
+.hist-body{padding:16px;flex:1;}
+
+/* ADMIN */
+#admin-screen{background:var(--black);}
+.admin-header{background:var(--card);border-bottom:1px solid var(--border);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+.admin-header h2{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;}
+.admin-tag{font-size:11px;color:var(--red);text-transform:uppercase;letter-spacing:1px;background:rgba(212,43,43,0.15);padding:3px 8px;border-radius:20px;}
+.admin-body{padding:16px;}
+.admin-tabs{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
+.admin-tabs::-webkit-scrollbar{display:none;}
+.tab-btn{flex-shrink:0;background:var(--card);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+.tab-btn.active{background:var(--red);border-color:var(--red);color:white;}
+
+/* YEAR/MONTH GROUPING */
+.group-year{margin-bottom:8px;}
+.year-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--red);border-radius:10px;cursor:pointer;margin-bottom:6px;}
+.year-label{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;}
+.year-arrow{font-size:14px;transition:transform 0.2s;}
+.group-year.collapsed .year-arrow{transform:rotate(-90deg);}
+.group-year.collapsed .year-body{display:none;}
+.group-month{margin-bottom:6px;padding-left:8px;}
+.month-header{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;cursor:pointer;margin-bottom:6px;}
+.month-label{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;flex:1;}
+.month-count{font-size:11px;color:var(--muted);background:var(--dark);padding:2px 8px;border-radius:20px;}
+.group-month.collapsed .year-arrow{transform:rotate(-90deg);}
+.group-month.collapsed .month-body{display:none;}
+.month-body{padding-left:4px;}
+
+/* SHARED RECORDS */
+.record-group{margin-bottom:12px;}
+.record-date{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;padding:0 4px;}
+.record-card{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:6px;}
+.record-card-header{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
+.record-card-header h4{font-weight:500;font-size:14px;}
+.record-pills{display:flex;gap:6px;}
+.pill{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;}
+.pill.p{background:rgba(34,197,94,0.2);color:var(--green);}
+.pill.t{background:rgba(245,158,11,0.2);color:var(--yellow);}
+.pill.a{background:rgba(212,43,43,0.2);color:var(--red-light);}
+.pill.l{background:rgba(168,85,247,0.2);color:var(--purple);}
+.record-detail{display:none;border-top:1px solid var(--border);padding:10px 14px;}
+.record-detail.show{display:block;}
+.detail-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:13px;}
+.detail-row:last-child{border-bottom:none;}
+.detail-status{font-size:12px;padding:2px 8px;border-radius:20px;white-space:nowrap;}
+.detail-status.P{background:rgba(34,197,94,0.15);color:var(--green);}
+.detail-status.T{background:rgba(245,158,11,0.15);color:var(--yellow);}
+.detail-status.A{background:rgba(212,43,43,0.15);color:var(--red-light);}
+.detail-status.L{background:rgba(168,85,247,0.15);color:var(--purple);}
+.detail-obs{font-size:11px;color:var(--muted);margin-top:2px;}
+.no-records{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;}
+.loading-msg{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;}
+.export-btn{width:100%;background:var(--dark);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:12px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;margin-top:8px;-webkit-appearance:none;}
+
+/* MODAL ADD PLAYER */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:100;align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--card);border-radius:20px 20px 0 0;padding:24px 20px 32px;width:100%;max-width:480px;}
+.modal-box h3{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;margin-bottom:16px;}
+.modal-box input,.modal-box select{width:100%;background:var(--dark);border:1px solid var(--border);border-radius:10px;padding:14px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;margin-bottom:12px;}
+.modal-box select option{background:var(--dark);}
+.modal-actions{display:flex;gap:10px;margin-top:4px;}
+.btn-cancel{flex:1;background:none;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;cursor:pointer;}
+.btn-confirm{flex:2;background:var(--red);border:none;color:white;border-radius:10px;padding:14px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;}
+
+.fab{position:fixed;bottom:88px;right:20px;width:52px;height:52px;background:var(--red);border-radius:14px;border:none;color:white;font-size:26px;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:50;box-shadow:0 4px 20px rgba(212,43,43,0.4);}
+.fab.visible{display:flex;}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);color:white;padding:12px 24px;border-radius:100px;font-size:14px;font-weight:600;z-index:200;transition:transform 0.3s ease;white-space:nowrap;background:var(--green);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen" class="screen active">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="logo-badge">BFC</div>
+      <div><h1>BARRANCAS FC</h1><p>Sistema de Asistencia</p></div>
+    </div>
+    <label>Código de acceso</label>
+    <input type="text" id="code-input" placeholder="Ingresá tu código" autocomplete="off" autocorrect="off" spellcheck="false">
+    <button class="btn-primary" id="btn-login">INGRESAR</button>
+    <div class="error-msg" id="error-msg"></div>
+    <div class="codes-hint">Cada categoría tiene su propio código.<br>Solicitalo al administrador.</div>
+  </div>
+</div>
+
+<!-- COACH HOME -->
+<div id="coach-home" class="screen">
+  <div class="home-header">
+    <div class="home-header-left">
+      <div class="cat-badge" id="home-cat-badge">—</div>
+      <h2 id="home-cat-title">CATEGORÍA</h2>
+    </div>
+    <button class="btn-logout" id="btn-logout-home">Salir</button>
+  </div>
+  <div class="home-body">
+    <div class="home-greeting">
+      <h3>¿QUÉ QUERÉS HACER?</h3>
+      <p id="home-date-display"></p>
+    </div>
+    <div class="home-card" id="btn-cargar-asistencia">
+      <div class="home-card-icon red">📋</div>
+      <div class="home-card-info">
+        <h4>CARGAR ASISTENCIA</h4>
+        <p>Seleccioná el día y completá la lista de jugadores</p>
+      </div>
+    </div>
+    <div class="home-card" id="btn-ver-historial">
+      <div class="home-card-icon gray">🕐</div>
+      <div class="home-card-info">
+        <h4>VER HISTORIAL</h4>
+        <p>Revisá los registros anteriores de tu categoría</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DATE MODAL -->
+<div class="date-modal" id="date-modal">
+  <div class="date-modal-box">
+    <h3>CARGAR ASISTENCIA</h3>
+    <p>Seleccioná la fecha del entrenamiento</p>
+    <label>Fecha</label>
+    <input type="date" id="selected-date" class="date-input-big">
+    <div class="date-quick">
+      <button class="quick-btn" id="quick-hoy">Hoy</button>
+      <button class="quick-btn" id="quick-ayer">Ayer</button>
+      <button class="quick-btn" id="quick-ante">Anteayer</button>
+    </div>
+    <button class="btn-go" id="btn-go-attendance">CONTINUAR →</button>
+    <button class="btn-cancel-modal" id="btn-cancel-date">Cancelar</button>
+  </div>
+</div>
+
+<!-- COACH ATTENDANCE -->
+<div id="coach-screen" class="screen">
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <div class="cat-badge" id="coach-cat-badge">—</div>
+      <h2 id="coach-title">CATEGORÍA</h2>
+    </div>
+    <div class="top-bar-right">
+      <button class="btn-back-home" id="btn-go-home">← Inicio</button>
+      <button class="btn-logout" id="btn-logout-coach">Salir</button>
+    </div>
+  </div>
+  <div class="date-banner">
+    <span>Fecha cargada</span>
+    <strong id="coach-date-display">—</strong>
+  </div>
+  <div class="stats-row">
+    <div class="stat-cell pres"><div class="num" id="stat-p">0</div><div class="lbl">Presentes</div></div>
+    <div class="stat-cell tard"><div class="num" id="stat-t">0</div><div class="lbl">Tarde</div></div>
+    <div class="stat-cell aus"><div class="num" id="stat-a">0</div><div class="lbl">Ausentes</div></div>
+    <div class="stat-cell les"><div class="num" id="stat-l">0</div><div class="lbl">Lesionados</div></div>
+  </div>
+  <div class="player-list" id="player-list"></div>
+  <div class="save-bar">
+    <button class="btn-save" id="btn-save">GUARDAR ASISTENCIA</button>
+    <div class="save-msg" id="save-msg"></div>
+  </div>
+</div>
+
+<!-- HISTORIAL -->
+<div id="historial-screen" class="screen">
+  <div class="hist-header">
+    <button class="btn-back" id="btn-back-hist">← Volver</button>
+    <h2 id="hist-title">HISTORIAL</h2>
+  </div>
+  <div class="hist-body" id="hist-body"></div>
+  <div style="padding:0 16px 24px;">
+    <button class="export-btn" id="btn-export-coach">⬇ EXPORTAR EXCEL</button>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="admin-screen" class="screen">
+  <div class="admin-header">
+    <h2>PANEL ADMIN</h2>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span class="admin-tag">QUIQUE</span>
+      <button class="btn-logout" id="btn-logout-admin">Salir</button>
+    </div>
+  </div>
+  <div class="admin-body">
+    <div class="admin-tabs" id="admin-tabs"></div>
+    <div id="admin-content"></div>
+    <button class="export-btn" id="btn-export-admin">⬇ EXPORTAR EXCEL</button>
+  </div>
+</div>
+
+<!-- FAB -->
+<button class="fab" id="fab-add">+</button>
+
+<!-- Modal agregar jugador -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal-box">
+    <h3>AGREGAR JUGADOR</h3>
+    <input type="text" id="new-player-name" placeholder="Nombre completo">
+    <select id="new-player-cat"><option value="">Seleccionar categoría</option></select>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="btn-cancel-add">Cancelar</button>
+      <button class="btn-confirm" id="btn-confirm-add">AGREGAR</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, getDocs, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ── Firebase ──────────────────────────────────────────────
+const db = getFirestore(initializeApp({
+  apiKey: "AIzaSyC23cn_UBJnX6BlY1QJkPCZ9NOT2JsBcrM",
+  authDomain: "barrancas-asistencia.firebaseapp.com",
+  projectId: "barrancas-asistencia",
+  storageBucket: "barrancas-asistencia.firebasestorage.app",
+  messagingSenderId: "1063524355747",
+  appId: "1:1063524355747:web:d03be35025df042f487916"
+}));
+
+// ── Config ────────────────────────────────────────────────
+const CATEGORIES = [
+  {code:'primera2026',key:'primera', label:'Primera',  badge:'1RA'},
+  {code:'cuarta2026', key:'cuarta',  label:'Cuarta',   badge:'4TA'},
+  {code:'quinta2026', key:'quinta',  label:'Quinta',   badge:'5TA'},
+  {code:'sexta2026',  key:'sexta',   label:'Sexta',    badge:'6TA'},
+  {code:'septima2026',key:'septima', label:'Séptima',  badge:'7MA'},
+  {code:'octava2026', key:'octava',  label:'Octava',   badge:'8VA'},
+  {code:'novena2026', key:'novena',  label:'Novena',   badge:'9NA'},
+  {code:'inf13_2026', key:'inf2013', label:'Inf. 2013',badge:'2013'},
+  {code:'inf14_2026', key:'inf2014', label:'Inf. 2014',badge:'2014'},
+  {code:'inf15_2026', key:'inf2015', label:'Inf. 2015',badge:'2015'},
+  {code:'inf16_2026', key:'inf2016', label:'Inf. 2016',badge:'2016'},
+];
+const ADMIN_CODE = 'adminBFC2026';
+const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+// ── State ─────────────────────────────────────────────────
+let currentUser = null;
+let attendance = {};
+let coachPlayers = [];
+let selectedDate = '';
+let adminTab = '';
+let allAdminRecords = [];
+let coachHistorialRecords = [];
+
+// ── Helpers ───────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const todayStr = () => new Date().toISOString().split('T')[0];
+const offsetDate = d => { const dt=new Date(); dt.setDate(dt.getDate()+d); return dt.toISOString().split('T')[0]; };
+const formatDate = s => new Date(s+'T12:00:00').toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+const showScreen = id => document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id===id));
+const showToast = (msg,color) => { const t=$('toast'); t.textContent=msg; t.style.background=color||'#22C55E'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); };
+const statusClass = s => ({P:'presente',T:'tarde',A:'ausente',L:'lesionado'}[s]||'');
+const statusLabel = (s,obs) => s==='P'?'Presente':s==='T'?'Tarde':s==='L'?'🩹 Lesionado':s==='A'?(obs?`Ausente · ${obs}`:'Ausente'):'';
+
+// ── Event Listeners ───────────────────────────────────────
+$('btn-login').addEventListener('click', handleLogin);
+$('code-input').addEventListener('keydown', e => { if(e.key==='Enter') handleLogin(); });
+$('btn-logout-home').addEventListener('click', logout);
+$('btn-logout-coach').addEventListener('click', logout);
+$('btn-logout-admin').addEventListener('click', logout);
+$('btn-cargar-asistencia').addEventListener('click', openDateModal);
+$('btn-ver-historial').addEventListener('click', showHistorial);
+$('btn-cancel-date').addEventListener('click', closeDateModal);
+$('btn-go-attendance').addEventListener('click', goToAttendance);
+$('quick-hoy').addEventListener('click', () => $('selected-date').value=todayStr());
+$('quick-ayer').addEventListener('click', () => $('selected-date').value=offsetDate(-1));
+$('quick-ante').addEventListener('click', () => $('selected-date').value=offsetDate(-2));
+$('btn-go-home').addEventListener('click', () => showScreen('coach-home'));
+$('btn-back-hist').addEventListener('click', () => showScreen('coach-home'));
+$('btn-save').addEventListener('click', saveAttendance);
+$('fab-add').addEventListener('click', () => { $('add-modal').classList.add('open'); $('new-player-name').focus(); });
+$('btn-cancel-add').addEventListener('click', () => { $('add-modal').classList.remove('open'); $('new-player-name').value=''; });
+$('btn-confirm-add').addEventListener('click', confirmAddPlayer);
+$('btn-export-coach').addEventListener('click', () => buildExcel(coachHistorialRecords, `asistencia_${currentUser.catLabel.toLowerCase().replace(/\s/g,'_')}`));
+$('btn-export-admin').addEventListener('click', () => buildExcel(allAdminRecords, 'asistencia_barrancas_todas'));
+
+// ── LOGIN ─────────────────────────────────────────────────
+async function handleLogin() {
+  const code = $('code-input').value.trim();
+  $('error-msg').textContent = '';
+  const btn = $('btn-login');
+  btn.innerHTML = '<span class="spinner"></span>INGRESANDO...';
+  btn.disabled = true;
+
+  try {
+    if (code === ADMIN_CODE) {
+      currentUser = {type:'admin'};
+      showScreen('admin-screen');
+      $('fab-add').classList.add('visible');
+      await renderAdmin();
+    } else {
+      const cat = CATEGORIES.find(c => c.code === code);
+      if (cat) {
+        currentUser = {type:'coach', catKey:cat.key, catLabel:cat.label, catBadge:cat.badge};
+        await loadCoachPlayers();
+        $('home-cat-badge').textContent = cat.badge;
+        $('home-cat-title').textContent = cat.label.toUpperCase();
+        $('home-date-display').textContent = formatDate(todayStr());
+        showScreen('coach-home');
+      } else {
+        $('error-msg').textContent = 'Código incorrecto. Intentá de nuevo.';
+      }
+    }
+  } catch(e) {
+    $('error-msg').textContent = 'Error de conexión. Revisá tu internet.';
+    console.error(e);
+  }
+
+  btn.innerHTML = 'INGRESAR';
+  btn.disabled = false;
+}
+
+function logout() {
+  currentUser = null; attendance = {}; coachPlayers = []; selectedDate = '';
+  $('code-input').value = '';
+  $('error-msg').textContent = '';
+  $('fab-add').classList.remove('visible');
+  showScreen('login-screen');
+}
+
+// ── COACH HOME ────────────────────────────────────────────
+async function loadCoachPlayers() {
+  const snap = await getDocs(collection(db,'players'));
+  coachPlayers = [];
+  snap.forEach(d => { if(d.data().category===currentUser.catKey) coachPlayers.push(d.data().name); });
+  coachPlayers.sort();
+}
+
+// ── DATE MODAL ────────────────────────────────────────────
+function openDateModal() {
+  $('selected-date').value = todayStr();
+  $('date-modal').classList.add('open');
+}
+function closeDateModal() {
+  $('date-modal').classList.remove('open');
+}
+async function goToAttendance() {
+  const dateVal = $('selected-date').value;
+  if (!dateVal) { showToast('Seleccioná una fecha','#FF4444'); return; }
+  selectedDate = dateVal;
+  closeDateModal();
+  await renderAttendance();
+}
+
+// ── ATTENDANCE ────────────────────────────────────────────
+async function renderAttendance() {
+  $('coach-cat-badge').textContent = currentUser.catBadge;
+  $('coach-title').textContent = currentUser.catLabel.toUpperCase();
+  $('coach-date-display').textContent = formatDate(selectedDate);
+  $('player-list').innerHTML = '<div class="loading-msg"><span class="spinner"></span>Cargando jugadores...</div>';
+  showScreen('coach-screen');
+
+  const recSnap = await getDocs(query(collection(db,'attendance'), where('category','==',currentUser.catKey), where('date','==',selectedDate)));
+  attendance = {};
+  if (!recSnap.empty) {
+    const existing = recSnap.docs[0].data().players;
+    coachPlayers.forEach(p => { attendance[p] = existing[p]||{status:null,obs:''}; });
+  } else {
+    coachPlayers.forEach(p => { attendance[p] = {status:null,obs:''}; });
+  }
+  renderPlayerList();
+  updateStats();
+}
+
+function renderPlayerList() {
+  const players = Object.keys(attendance);
+  const list = $('player-list');
+  list.innerHTML = '';
+  if (players.length===0) { list.innerHTML='<div class="no-records">No hay jugadores en esta categoría.</div>'; return; }
+
+  players.forEach((name,i) => {
+    const st = attendance[name];
+    const card = document.createElement('div');
+    card.className = 'player-card'+(st.status?' is-'+statusClass(st.status):'');
+    card.innerHTML = `
+      <div class="player-num">${i+1}</div>
+      <div class="player-info">
+        <div class="player-name">${name}</div>
+        <div class="player-obs">${st.status==='A'&&st.obs?st.obs:(st.status!=='A'?(st.obs||''):'')}</div>
+      </div>
+      <div class="status-btns">
+        <button class="sbtn ${st.status==='P'?'active-p':''}" data-idx="${i}" data-st="P" title="Presente">✓</button>
+        <button class="sbtn ${st.status==='T'?'active-t':''}" data-idx="${i}" data-st="T" title="Tarde">⏱</button>
+        <button class="sbtn ${st.status==='A'?'active-a':''}" data-idx="${i}" data-st="A" title="Ausente">✕</button>
+        <button class="sbtn ${st.status==='L'?'active-l':''}" data-idx="${i}" data-st="L" title="Lesionado">🩹</button>
+      </div>`;
+    list.appendChild(card);
+
+    const obsRow = document.createElement('div');
+    obsRow.className = 'obs-row'+(st.status?' show':'');
+    obsRow.id = 'obs-row-'+i;
+    if (st.status==='A') {
+      obsRow.innerHTML = `<div class="aviso-btns">
+        <button class="aviso-btn ${st.obs==='Con aviso'?'active':''}" data-idx="${i}" data-val="Con aviso">📩 Con aviso</button>
+        <button class="aviso-btn ${st.obs==='Sin aviso'?'active':''}" data-idx="${i}" data-val="Sin aviso">🔕 Sin aviso</button>
+      </div>`;
+    } else if (st.status) {
+      obsRow.innerHTML = `<input type="text" placeholder="Observación (opcional)" value="${st.obs||''}" data-idx="${i}">`;
+    }
+    list.appendChild(obsRow);
+  });
+
+  // Status buttons
+  list.querySelectorAll('.sbtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.idx);
+      const s = btn.dataset.st;
+      const name = Object.keys(attendance)[idx];
+      attendance[name].status = attendance[name].status===s ? null : s;
+      if (attendance[name].status!=='A') attendance[name].obs='';
+      renderPlayerList();
+      updateStats();
+      if (attendance[name].status) setTimeout(()=>{ const r=$('obs-row-'+idx); if(r)r.classList.add('show'); },10);
+    });
+  });
+
+  // Aviso buttons
+  list.querySelectorAll('.aviso-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.idx);
+      const val = btn.dataset.val;
+      const name = Object.keys(attendance)[idx];
+      attendance[name].obs = attendance[name].obs===val ? '' : val;
+      renderPlayerList();
+    });
+  });
+
+  // Obs inputs
+  list.querySelectorAll('input[data-idx]').forEach(input => {
+    input.addEventListener('input', () => {
+      const idx = parseInt(input.dataset.idx);
+      const name = Object.keys(attendance)[idx];
+      attendance[name].obs = input.value;
+    });
+  });
+}
+
+function updateStats() {
+  const vals = Object.values(attendance);
+  $('stat-p').textContent = vals.filter(v=>v.status==='P').length;
+  $('stat-t').textContent = vals.filter(v=>v.status==='T').length;
+  $('stat-a').textContent = vals.filter(v=>v.status==='A').length;
+  $('stat-l').textContent = vals.filter(v=>v.status==='L').length;
+}
+
+async function saveAttendance() {
+  const hasAny = Object.values(attendance).some(v=>v.status!==null);
+  if (!hasAny) {
+    $('save-msg').textContent='Marcá al menos un jugador antes de guardar.';
+    $('save-msg').style.color='#FF4444';
+    setTimeout(()=>{$('save-msg').textContent='';},3000);
+    return;
+  }
+  const btn = $('btn-save');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>GUARDANDO...';
+  try {
+    await setDoc(doc(db,'attendance',`${currentUser.catKey}_${selectedDate}`),{
+      category:currentUser.catKey, categoryLabel:currentUser.catLabel,
+      date:selectedDate, players:attendance, savedAt:new Date().toISOString()
+    });
+    $('save-msg').textContent='✓ Asistencia guardada';
+    $('save-msg').style.color='#22C55E';
+    showToast('Asistencia guardada ✓');
+    setTimeout(()=>{$('save-msg').textContent='';},3000);
+  } catch(e) {
+    $('save-msg').textContent='Error al guardar. Revisá tu conexión.';
+    $('save-msg').style.color='#FF4444';
+    setTimeout(()=>{$('save-msg').textContent='';},4000);
+  }
+  btn.disabled=false; btn.innerHTML='GUARDAR ASISTENCIA';
+}
+
+// ── HISTORIAL ─────────────────────────────────────────────
+async function showHistorial() {
+  showScreen('historial-screen');
+  $('hist-title').textContent = `HISTORIAL — ${currentUser.catLabel.toUpperCase()}`;
+  const body = $('hist-body');
+  body.innerHTML = '<div class="loading-msg"><span class="spinner"></span>Cargando historial...</div>';
+  const snap = await getDocs(query(collection(db,'attendance'), where('category','==',currentUser.catKey), orderBy('date','desc')));
+  coachHistorialRecords = [];
+  snap.forEach(d => coachHistorialRecords.push(d.data()));
+  body.innerHTML = '';
+  if (coachHistorialRecords.length===0) { body.innerHTML='<div class="no-records">Aún no hay registros para esta categoría.</div>'; return; }
+  body.appendChild(buildGroupedRecords(coachHistorialRecords));
+}
+
+// ── ADMIN ─────────────────────────────────────────────────
+async function renderAdmin() {
+  const tabs = $('admin-tabs');
+  tabs.innerHTML = ''; adminTab = '';
+
+  const makeTab = (label, key) => {
+    const btn = document.createElement('button');
+    btn.className = 'tab-btn'+(key===''?' active':'');
+    btn.textContent = label;
+    btn.addEventListener('click', () => {
+      adminTab = key;
+      tabs.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      renderAdminContent();
+    });
+    tabs.appendChild(btn);
+  };
+  makeTab('Todas','');
+  CATEGORIES.forEach(c => makeTab(c.label, c.key));
+
+  const sel = $('new-player-cat');
+  sel.innerHTML = '<option value="">Seleccionar categoría</option>';
+  CATEGORIES.forEach(c => { const o=document.createElement('option'); o.value=c.key; o.textContent=c.label; sel.appendChild(o); });
+
+  await loadAdminRecords();
+}
+
+async function loadAdminRecords() {
+  $('admin-content').innerHTML = '<div class="loading-msg"><span class="spinner"></span>Cargando registros...</div>';
+  const snap = await getDocs(query(collection(db,'attendance'), orderBy('date','desc')));
+  allAdminRecords = [];
+  snap.forEach(d => allAdminRecords.push(d.data()));
+  renderAdminContent();
+}
+
+function renderAdminContent() {
+  const content = $('admin-content');
+  content.innerHTML = '';
+  const records = adminTab ? allAdminRecords.filter(r=>r.category===adminTab) : allAdminRecords;
+  if (records.length===0) { content.innerHTML='<div class="no-records">Aún no hay registros de asistencia.</div>'; return; }
+  content.appendChild(buildGroupedRecords(records));
+}
+
+// ── GROUPED RECORDS ───────────────────────────────────────
+function buildGroupedRecords(records) {
+  const container = document.createElement('div');
+  const grouped = {};
+  records.forEach(rec => {
+    const [year,month] = rec.date.split('-');
+    if (!grouped[year]) grouped[year]={};
+    if (!grouped[year][month]) grouped[year][month]=[];
+    grouped[year][month].push(rec);
+  });
+
+  Object.keys(grouped).sort((a,b)=>b-a).forEach(year => {
+    const yearEl = document.createElement('div');
+    yearEl.className = 'group-year';
+
+    const yearHeader = document.createElement('div');
+    yearHeader.className = 'year-header';
+    yearHeader.innerHTML = `<span class="year-label">${year}</span><span class="year-arrow">▾</span>`;
+    yearHeader.addEventListener('click', () => yearEl.classList.toggle('collapsed'));
+
+    const yearBody = document.createElement('div');
+    yearBody.className = 'year-body';
+
+    Object.keys(grouped[year]).sort((a,b)=>b-a).forEach(month => {
+      const recs = grouped[year][month];
+      const monthEl = document.createElement('div');
+      monthEl.className = 'group-month';
+
+      const monthHeader = document.createElement('div');
+      monthHeader.className = 'month-header';
+      monthHeader.innerHTML = `<span class="month-label">${MONTHS[parseInt(month)-1]}</span><span class="month-count">${recs.length} registro${recs.length!==1?'s':''}</span><span class="year-arrow">▾</span>`;
+      monthHeader.addEventListener('click', () => monthEl.classList.toggle('collapsed'));
+
+      const monthBody = document.createElement('div');
+      monthBody.className = 'month-body';
+      recs.forEach(rec => monthBody.appendChild(buildRecordCard(rec)));
+
+      monthEl.appendChild(monthHeader);
+      monthEl.appendChild(monthBody);
+      yearBody.appendChild(monthEl);
+    });
+
+    yearEl.appendChild(yearHeader);
+    yearEl.appendChild(yearBody);
+    container.appendChild(yearEl);
+  });
+  return container;
+}
+
+function buildRecordCard(rec) {
+  const group = document.createElement('div');
+  group.className = 'record-group';
+  group.innerHTML = `<div class="record-date">${rec.categoryLabel} — ${formatDate(rec.date)}</div>`;
+
+  const players = rec.players;
+  const p = Object.values(players).filter(v=>v.status==='P').length;
+  const t = Object.values(players).filter(v=>v.status==='T').length;
+  const a = Object.values(players).filter(v=>v.status==='A').length;
+  const l = Object.values(players).filter(v=>v.status==='L').length;
+
+  const card = document.createElement('div');
+  card.className = 'record-card';
+
+  const header = document.createElement('div');
+  header.className = 'record-card-header';
+  header.innerHTML = `
+    <h4>${Object.keys(players).length} jugadores</h4>
+    <div class="record-pills">
+      <span class="pill p">${p} P</span><span class="pill t">${t} T</span><span class="pill a">${a} A</span>
+      ${l>0?`<span class="pill l">${l} 🩹</span>`:''}
+    </div>`;
+
+  const detail = document.createElement('div');
+  detail.className = 'record-detail';
+  Object.entries(players).forEach(([name,data]) => {
+    if (!data.status) return;
+    const row = document.createElement('div');
+    row.className = 'detail-row';
+    row.innerHTML = `
+      <div><div>${name}</div>${data.obs?`<div class="detail-obs">${data.obs}</div>`:''}</div>
+      <span class="detail-status ${data.status}">${statusLabel(data.status,data.obs)}</span>`;
+    detail.appendChild(row);
+  });
+
+  header.addEventListener('click', () => detail.classList.toggle('show'));
+  card.appendChild(header);
+  card.appendChild(detail);
+  group.appendChild(card);
+  return group;
+}
+
+// ── ADD PLAYER ────────────────────────────────────────────
+async function confirmAddPlayer() {
+  const name = $('new-player-name').value.trim();
+  const catKey = $('new-player-cat').value;
+  const catLabel = CATEGORIES.find(c=>c.key===catKey)?.label||catKey;
+  if (!name||!catKey) return;
+  try {
+    const docId = `${catKey}_${name.toLowerCase().replace(/\s+/g,'_')}`;
+    await setDoc(doc(db,'players',docId),{name,category:catKey,categoryLabel:catLabel});
+    $('add-modal').classList.remove('open');
+    $('new-player-name').value='';
+    showToast(`${name} agregado ✓`);
+    await loadAdminRecords();
+  } catch(e) { showToast('Error al agregar','#FF4444'); }
+}
+
+// ── EXPORT EXCEL ──────────────────────────────────────────
+function buildExcel(records, filename) {
+  if (!records||records.length===0) { showToast('No hay datos para exportar','#FF4444'); return; }
+  const wb = XLSX.utils.book_new();
+
+  // Hoja 1: Registro completo
+  const rows1 = [['Categoría','Fecha','Jugador','Estado','Observación']];
+  records.forEach(rec => {
+    Object.entries(rec.players).forEach(([name,data]) => {
+      if (!data.status) return;
+      const estado = {P:'Presente',T:'Tarde',L:'Lesionado',A:'Ausente'}[data.status]||'';
+      rows1.push([rec.categoryLabel,rec.date,name,estado,data.obs||'']);
+    });
+  });
+  const ws1 = XLSX.utils.aoa_to_sheet(rows1);
+  ws1['!cols']=[{wch:14},{wch:13},{wch:22},{wch:12},{wch:20}];
+  XLSX.utils.book_append_sheet(wb,ws1,'Registro completo');
+
+  // Hoja 2: Por jugador
+  const playerMap = {};
+  const allDates = new Set();
+  records.forEach(rec => {
+    Object.entries(rec.players).forEach(([name,data]) => {
+      if (!data.status) return;
+      if (!playerMap[name]) playerMap[name]={cat:rec.categoryLabel};
+      const e = data.status==='A'&&data.obs?`A - ${data.obs}`:{P:'P',T:'T',L:'L',A:'A'}[data.status]||'';
+      playerMap[name][rec.date]=e;
+      allDates.add(rec.date);
+    });
+  });
+  const sortedDates = Array.from(allDates).sort();
+  const rows2 = [['Jugador','Categoría',...sortedDates]];
+  Object.entries(playerMap).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([name,data])=>{
+    rows2.push([name,data.cat,...sortedDates.map(d=>data[d]||'—')]);
+  });
+  const ws2 = XLSX.utils.aoa_to_sheet(rows2);
+  ws2['!cols']=[{wch:22},{wch:12},...sortedDates.map(()=>({wch:13}))];
+  XLSX.utils.book_append_sheet(wb,ws2,'Por jugador');
+
+  // Hoja 3: Por fecha
+  const dateMap = {};
+  records.forEach(rec => {
+    if (!dateMap[rec.date]) dateMap[rec.date]=[];
+    Object.entries(rec.players).forEach(([name,data])=>{
+      if (!data.status) return;
+      const estado={P:'Presente',T:'Tarde',L:'Lesionado',A:'Ausente'}[data.status]||'';
+      dateMap[rec.date].push({cat:rec.categoryLabel,name,estado,obs:data.obs||''});
+    });
+  });
+  const rows3 = [['Fecha','Categoría','Jugador','Estado','Observación']];
+  Object.keys(dateMap).sort().reverse().forEach(date=>{
+    dateMap[date].forEach(e=>rows3.push([date,e.cat,e.name,e.estado,e.obs]));
+  });
+  const ws3 = XLSX.utils.aoa_to_sheet(rows3);
+  ws3['!cols']=[{wch:13},{wch:14},{wch:22},{wch:12},{wch:20}];
+  XLSX.utils.book_append_sheet(wb,ws3,'Por fecha');
+
+  XLSX.writeFile(wb,`${filename}_${todayStr()}.xlsx`);
+}
+</script>
+</body>
+</html>
