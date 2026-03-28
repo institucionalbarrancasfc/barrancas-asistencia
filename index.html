@@ -206,6 +206,12 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
 .lb-delete{background:rgba(255,68,68,0.15);color:var(--red-light);}
 .lb-export{background:rgba(245,158,11,0.15);color:var(--yellow);}
 
+/* CATEGORY CHECKBOX PILLS */
+.cat-pill{display:inline-flex;align-items:center;gap:6px;background:var(--dark);border:1px solid var(--border);border-radius:8px;padding:8px 12px;cursor:pointer;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--muted);transition:all 0.15s;-webkit-appearance:none;}
+.cat-pill.selected{background:rgba(212,43,43,0.2);border-color:var(--red);color:var(--text);}
+.cat-pill:active{transform:scale(0.97);}
+.cat-section-title{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;color:var(--muted);margin-bottom:8px;margin-top:12px;}
+
 /* SHARED */
 .no-records{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;}
 .loading-msg{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;}
@@ -258,31 +264,14 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
 <div id="coach-home" class="screen">
   <div class="home-header">
     <div class="home-header-left">
-      <div class="cat-badge" id="home-cat-badge">—</div>
-      <h2 id="home-cat-title">CATEGORÍA</h2>
+      <h2 id="home-username-title">HOLA</h2>
     </div>
     <div style="display:flex;align-items:center;gap:8px;">
-      <span style="font-size:12px;color:var(--muted);" id="home-username"></span>
       <button class="btn-logout" id="btn-logout-home">Salir</button>
     </div>
   </div>
-  <div class="home-body">
-    <div class="home-greeting" style="margin-bottom:4px;">
-      <h3>¿QUÉ QUERÉS HACER?</h3>
-      <p id="home-date-display"></p>
-    </div>
-    <div class="home-card" id="btn-cargar-asistencia">
-      <div class="home-card-icon hci-red">📋</div>
-      <div class="home-card-info"><h4>CARGAR ASISTENCIA</h4><p>Seleccioná el día y completá la lista</p></div>
-    </div>
-    <div class="home-card" id="btn-ver-historial">
-      <div class="home-card-icon hci-gray">🕐</div>
-      <div class="home-card-info"><h4>VER HISTORIAL</h4><p>Registros anteriores de tu categoría</p></div>
-    </div>
-    <div class="home-card" id="btn-gestionar-jugadores">
-      <div class="home-card-icon hci-blue">👥</div>
-      <div class="home-card-info"><h4>GESTIONAR JUGADORES</h4><p>Agregá o eliminá jugadores</p></div>
-    </div>
+  <div class="home-body" id="home-body">
+    <!-- Rendered dynamically -->
   </div>
 </div>
 
@@ -417,10 +406,26 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
     <input type="text" id="new-user-username" placeholder="Usuario (ej: carlos)" autocomplete="off" autocorrect="off" spellcheck="false">
     <input type="text" id="new-user-displayname" placeholder="Nombre completo (ej: Carlos López)">
     <input type="password" id="new-user-password" placeholder="Contraseña">
-    <select id="new-user-cat"><option value="">Seleccionar categoría</option></select>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Categorías asignadas</div>
+      <div id="new-user-cats-checkboxes" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+    </div>
     <div class="modal-actions">
       <button class="btn-cancel" id="btn-cancel-create-user">Cancelar</button>
       <button class="btn-confirm btn-confirm-blue" id="btn-confirm-create-user">CREAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit user categories -->
+<div class="modal-overlay" id="edit-cats-modal">
+  <div class="modal-box">
+    <h3>EDITAR CATEGORÍAS</h3>
+    <p>Categorías asignadas a <strong id="edit-cats-username" style="color:var(--text)"></strong></p>
+    <div id="edit-cats-checkboxes" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="btn-cancel-edit-cats">Cancelar</button>
+      <button class="btn-confirm btn-confirm-blue" id="btn-confirm-edit-cats">GUARDAR</button>
     </div>
   </div>
 </div>
@@ -475,7 +480,8 @@ const ADMIN_PASS = 'adminBFC2026';
 const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
 // ── State ─────────────────────────────────────────────────
-let currentUser = null; // { type, username, displayName, catKey, catLabel, catBadge }
+let currentUser = null; // { type, username, displayName, categories:[{key,label,badge}] }
+let activeCat = null;   // { key, label, badge } — currently selected category
 let attendance = {};
 let coachPlayers = [];
 let selectedDate = '';
@@ -484,6 +490,7 @@ let allAdminRecords = [];
 let coachHistorialRecords = [];
 let playerToDelete = null;
 let userToReset = null;
+let userToEditCats = null;
 let allUsers = [];
 
 // ── Helpers ───────────────────────────────────────────────
@@ -521,17 +528,14 @@ $('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') handleLog
 $('btn-logout-home').addEventListener('click', logout);
 $('btn-logout-coach').addEventListener('click', logout);
 $('btn-logout-admin').addEventListener('click', logout);
-$('btn-cargar-asistencia').addEventListener('click', openDateModal);
-$('btn-ver-historial').addEventListener('click', showHistorial);
-$('btn-gestionar-jugadores').addEventListener('click', showGestionarJugadores);
 $('btn-cancel-date').addEventListener('click', () => $('date-modal').classList.remove('open'));
 $('btn-go-attendance').addEventListener('click', goToAttendance);
 $('quick-hoy').addEventListener('click', () => $('selected-date').value=todayStr());
 $('quick-ayer').addEventListener('click', () => $('selected-date').value=offsetDate(-1));
 $('quick-ante').addEventListener('click', () => $('selected-date').value=offsetDate(-2));
-$('btn-go-home').addEventListener('click', () => showScreen('coach-home'));
-$('btn-back-hist').addEventListener('click', () => showScreen('coach-home'));
-$('btn-back-jugadores').addEventListener('click', () => showScreen('coach-home'));
+$('btn-go-home').addEventListener('click', () => showCoachHome());
+$('btn-back-hist').addEventListener('click', () => showCoachHome());
+$('btn-back-jugadores').addEventListener('click', () => showCoachHome());
 $('btn-save').addEventListener('click', saveAttendance);
 $('btn-nuevo-jugador').addEventListener('click', () => { $('new-player-name-coach').value=''; $('add-modal-coach').classList.add('open'); $('new-player-name-coach').focus(); });
 $('btn-cancel-add-coach').addEventListener('click', () => $('add-modal-coach').classList.remove('open'));
@@ -545,7 +549,9 @@ $('btn-cancel-create-user').addEventListener('click', () => $('create-user-modal
 $('btn-confirm-create-user').addEventListener('click', confirmCreateUser);
 $('btn-cancel-reset').addEventListener('click', () => $('reset-pass-modal').classList.remove('open'));
 $('btn-confirm-reset').addEventListener('click', confirmResetPassword);
-$('btn-export-coach').addEventListener('click', () => { logAction('Exportar Excel', currentUser.catLabel); buildExcel(coachHistorialRecords, `asistencia_${currentUser.catLabel.toLowerCase().replace(/\s/g,'_')}`); });
+$('btn-cancel-edit-cats').addEventListener('click', () => $('edit-cats-modal').classList.remove('open'));
+$('btn-confirm-edit-cats').addEventListener('click', confirmEditCats);
+$('btn-export-coach').addEventListener('click', () => { logAction('Exportar Excel', activeCat?.label||''); buildExcel(coachHistorialRecords, `asistencia_${(activeCat?.label||'').toLowerCase().replace(/\s/g,'_')}`); });
 $('btn-export-admin').addEventListener('click', () => { logAction('Exportar Excel', 'Todas las categorías'); buildExcel(allAdminRecords, 'asistencia_barrancas_todas'); });
 
 // ── LOGIN ─────────────────────────────────────────────────
@@ -588,23 +594,26 @@ async function handleLogin() {
       return;
     }
 
-    const cat = catByKey(userData.catKey);
-    currentUser = {
-      type: 'coach',
-      username,
-      displayName: userData.displayName || username,
-      catKey: userData.catKey,
-      catLabel: cat?.label || userData.catKey,
-      catBadge: cat?.badge || userData.catKey.toUpperCase()
-    };
+    // Support both old catKey (string) and new categories (array)
+    let userCats = [];
+    if (Array.isArray(userData.categories) && userData.categories.length > 0) {
+      userCats = userData.categories.map(k => catByKey(k)).filter(Boolean);
+    } else if (userData.catKey) {
+      const c = catByKey(userData.catKey);
+      if (c) userCats = [c];
+    }
 
-    await logAction('Inicio de sesión', currentUser.catLabel);
-    await loadCoachPlayers();
-    $('home-cat-badge').textContent = currentUser.catBadge;
-    $('home-cat-title').textContent = currentUser.catLabel.toUpperCase();
-    $('home-username').textContent = currentUser.displayName;
-    $('home-date-display').textContent = formatDate(todayStr());
-    showScreen('coach-home');
+    if (userCats.length === 0) {
+      $('error-msg').textContent = 'No tenés categorías asignadas. Contactá al admin.';
+      btn.innerHTML='INGRESAR'; btn.disabled=false;
+      return;
+    }
+
+    currentUser = { type:'coach', username, displayName: userData.displayName||username, categories: userCats };
+    activeCat = userCats[0];
+
+    await logAction('Inicio de sesión', userCats.map(c=>c.label).join(', '));
+    showCoachHome();
 
   } catch(e) {
     $('error-msg').textContent = 'Error de conexión. Revisá tu internet.';
@@ -622,11 +631,58 @@ function logout() {
   showScreen('login-screen');
 }
 
-// ── COACH ─────────────────────────────────────────────────
+// ── COACH HOME ────────────────────────────────────────────
+function showCoachHome() {
+  $('home-username-title').textContent = currentUser.displayName.toUpperCase();
+  const body = $('home-body');
+  body.innerHTML = '';
+
+  const today = document.createElement('p');
+  today.style.cssText = 'color:var(--muted);font-size:13px;margin-bottom:12px;';
+  today.textContent = formatDate(todayStr());
+  body.appendChild(today);
+
+  // If multiple categories, show category section headers
+  currentUser.categories.forEach(cat => {
+    // Category header
+    const catTitle = document.createElement('div');
+    catTitle.className = 'cat-section-title';
+    catTitle.innerHTML = `<span style="background:var(--red);border-radius:6px;padding:2px 8px;font-size:13px;color:white;margin-right:8px;">${cat.badge}</span>${cat.label.toUpperCase()}`;
+    body.appendChild(catTitle);
+
+    const grid = document.createElement('div');
+    grid.style.cssText = 'display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;';
+
+    const actions = [
+      {icon:'📋', label:'Asistencia', color:'hci-red', action:'attendance'},
+      {icon:'🕐', label:'Historial', color:'hci-gray', action:'historial'},
+      {icon:'👥', label:'Jugadores', color:'hci-blue', action:'jugadores'},
+    ];
+
+    actions.forEach(a => {
+      const card = document.createElement('div');
+      card.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;';
+      card.innerHTML = `<div style="font-size:22px;">${a.icon}</div><div style="font-family:\'Bebas Neue\',sans-serif;font-size:13px;letter-spacing:1px;color:var(--text);">${a.label}</div>`;
+      card.addEventListener('click', () => {
+        activeCat = cat;
+        if (a.action==='attendance') openDateModal();
+        else if (a.action==='historial') showHistorial();
+        else if (a.action==='jugadores') showGestionarJugadores();
+      });
+      card.addEventListener('touchstart', () => card.style.borderColor='var(--red)', {passive:true});
+      card.addEventListener('touchend', () => card.style.borderColor='var(--border)', {passive:true});
+      grid.appendChild(card);
+    });
+    body.appendChild(grid);
+  });
+
+  showScreen('coach-home');
+}
+
 async function loadCoachPlayers() {
   const snap = await getDocs(collection(db,'players'));
   coachPlayers=[];
-  snap.forEach(d => { if(d.data().category===currentUser.catKey) coachPlayers.push(d.data().name); });
+  snap.forEach(d => { if(d.data().category===activeCat.key) coachPlayers.push(d.data().name); });
   coachPlayers.sort();
 }
 
@@ -644,12 +700,13 @@ async function goToAttendance() {
 }
 
 async function renderAttendance() {
-  $('coach-cat-badge').textContent = currentUser.catBadge;
-  $('coach-title').textContent = currentUser.catLabel.toUpperCase();
+  $('coach-cat-badge').textContent = activeCat.badge;
+  $('coach-title').textContent = activeCat.label.toUpperCase();
   $('coach-date-display').textContent = formatDate(selectedDate);
   $('player-list').innerHTML = '<div class="loading-msg"><span class="spinner"></span>Cargando...</div>';
   showScreen('coach-screen');
-  const recSnap = await getDocs(query(collection(db,'attendance'), where('category','==',currentUser.catKey), where('date','==',selectedDate)));
+  await loadCoachPlayers();
+  const recSnap = await getDocs(query(collection(db,'attendance'), where('category','==',activeCat.key), where('date','==',selectedDate)));
   attendance={};
   if (!recSnap.empty) {
     const existing = recSnap.docs[0].data().players;
@@ -734,12 +791,12 @@ async function saveAttendance() {
   const btn=$('btn-save');
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span>GUARDANDO...';
   try {
-    await setDoc(doc(db,'attendance',`${currentUser.catKey}_${selectedDate}`),{
-      category:currentUser.catKey, categoryLabel:currentUser.catLabel,
+    await setDoc(doc(db,'attendance',`${activeCat.key}_${selectedDate}`),{
+      category:activeCat.key, categoryLabel:activeCat.label,
       date:selectedDate, players:attendance, savedAt:new Date().toISOString(),
       savedBy: currentUser.username
     });
-    await logAction('Guardar asistencia', `${currentUser.catLabel} — ${selectedDate}`);
+    await logAction('Guardar asistencia', `${activeCat.label} — ${selectedDate}`);
     const m=$('save-msg'); m.textContent='✓ Asistencia guardada'; m.style.color='#22C55E';
     showToast('Asistencia guardada ✓');
     setTimeout(()=>{m.textContent='';},3000);
@@ -750,10 +807,10 @@ async function saveAttendance() {
 // ── HISTORIAL ─────────────────────────────────────────────
 async function showHistorial() {
   showScreen('historial-screen');
-  $('hist-title').textContent=`HISTORIAL — ${currentUser.catLabel.toUpperCase()}`;
+  $('hist-title').textContent=`HISTORIAL — ${activeCat.label.toUpperCase()}`;
   const body=$('hist-body');
   body.innerHTML='<div class="loading-msg"><span class="spinner"></span>Cargando...</div>';
-  const snap=await getDocs(query(collection(db,'attendance'),where('category','==',currentUser.catKey),orderBy('date','desc')));
+  const snap=await getDocs(query(collection(db,'attendance'),where('category','==',activeCat.key),orderBy('date','desc')));
   coachHistorialRecords=[];
   snap.forEach(d=>coachHistorialRecords.push(d.data()));
   body.innerHTML='';
@@ -764,13 +821,13 @@ async function showHistorial() {
 // ── JUGADORES ─────────────────────────────────────────────
 async function showGestionarJugadores() {
   showScreen('jugadores-screen');
-  $('jugadores-title').textContent=`JUGADORES — ${currentUser.catLabel.toUpperCase()}`;
+  $('jugadores-title').textContent=`JUGADORES — ${activeCat.label.toUpperCase()}`;
   const body=$('jugadores-body');
   body.innerHTML='<div class="loading-msg"><span class="spinner"></span>Cargando...</div>';
   const snap=await getDocs(collection(db,'players'));
   coachPlayers=[];
   const playerDocs={};
-  snap.forEach(d=>{if(d.data().category===currentUser.catKey){coachPlayers.push(d.data().name);playerDocs[d.data().name]=d.id;}});
+  snap.forEach(d=>{if(d.data().category===activeCat.key){coachPlayers.push(d.data().name);playerDocs[d.data().name]=d.id;}});
   coachPlayers.sort();
   body.innerHTML='';
   if(coachPlayers.length===0){body.innerHTML='<div class="no-records">No hay jugadores aún.</div>';return;}
@@ -793,9 +850,9 @@ async function confirmAddPlayerCoach() {
   const name=$('new-player-name-coach').value.trim();
   if(!name) return;
   try {
-    const docId=`${currentUser.catKey}_${name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'')}`;
-    await setDoc(doc(db,'players',docId),{name,category:currentUser.catKey,categoryLabel:currentUser.catLabel});
-    await logAction('Agregar jugador',`${name} en ${currentUser.catLabel}`);
+    const docId=`${activeCat.key}_${name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'')}`;
+    await setDoc(doc(db,'players',docId),{name,category:activeCat.key,categoryLabel:activeCat.label});
+    await logAction('Agregar jugador',`${name} en ${activeCat.label}`);
     $('add-modal-coach').classList.remove('open');
     showToast(`${name} agregado ✓`);
     await showGestionarJugadores();
@@ -836,13 +893,10 @@ async function renderAdmin() {
     tabs.appendChild(btn);
   });
 
-  // Populate category selects
-  [('new-player-cat'),('new-user-cat')].forEach(id=>{
-    const sel=$(id);
-    if(!sel) return;
-    sel.innerHTML='<option value="">Seleccionar categoría</option>';
-    CATEGORIES.forEach(c=>{const o=document.createElement('option');o.value=c.key;o.textContent=c.label;sel.appendChild(o);});
-  });
+  // Populate admin player category select
+  const sel=$('new-player-cat');
+  sel.innerHTML='<option value="">Seleccionar categoría</option>';
+  CATEGORIES.forEach(c=>{const o=document.createElement('option');o.value=c.key;o.textContent=c.label;sel.appendChild(o);});
 
   $('btn-export-admin').style.display='none';
   await loadAdminTab();
@@ -891,18 +945,29 @@ async function loadAdminTab() {
 
 function buildUserCard(u) {
   const card=document.createElement('div'); card.className='user-card';
-  const cat=catByKey(u.catKey);
+  // Support both old catKey and new categories array
+  let catLabels = '';
+  if (Array.isArray(u.categories) && u.categories.length > 0) {
+    catLabels = u.categories.map(k=>catByKey(k)?.label||k).join(', ');
+  } else if (u.catKey) {
+    catLabels = catByKey(u.catKey)?.label || u.catKey;
+  } else {
+    catLabels = 'Sin categoría';
+  }
+
   card.innerHTML=`
     <div class="user-card-top">
       <div class="user-card-info">
         <h4>${u.displayName||u.id} <span class="user-status-badge ${u.active?'badge-active':'badge-inactive'}">${u.active?'Activo':'Inactivo'}</span></h4>
-        <p>@${u.id} · ${cat?.label||u.catKey}</p>
+        <p>@${u.id} · ${catLabels}</p>
       </div>
-      <div class="user-actions">
+      <div class="user-actions" style="flex-wrap:wrap;justify-content:flex-end;">
+        <button class="btn-sm btn-sm-blue" data-uid="${u.id}" data-name="${u.displayName||u.id}" data-action="editcats">✏️ Categorías</button>
         <button class="btn-sm btn-sm-blue" data-uid="${u.id}" data-name="${u.displayName||u.id}" data-action="reset">🔑 Resetear</button>
         <button class="btn-sm ${u.active?'btn-sm-red':'btn-sm-gray'}" data-uid="${u.id}" data-active="${u.active}" data-action="toggle">${u.active?'Desactivar':'Activar'}</button>
       </div>
     </div>`;
+
   card.querySelectorAll('[data-action]').forEach(btn=>{
     btn.addEventListener('click',async()=>{
       if(btn.dataset.action==='reset'){
@@ -915,6 +980,26 @@ function buildUserCard(u) {
         await setDoc(doc(db,'users',btn.dataset.uid),{active:newActive},{merge:true});
         showToast(newActive?'Usuario activado':'Usuario desactivado');
         await loadAdminTab();
+      } else if(btn.dataset.action==='editcats'){
+        const u2=allUsers.find(x=>x.id===btn.dataset.uid);
+        userToEditCats={id:btn.dataset.uid, name:btn.dataset.name};
+        $('edit-cats-username').textContent=btn.dataset.name;
+        // Get current categories
+        let current=[];
+        if(Array.isArray(u2?.categories)) current=u2.categories;
+        else if(u2?.catKey) current=[u2.catKey];
+        // Render checkboxes
+        const container=$('edit-cats-checkboxes');
+        container.innerHTML='';
+        CATEGORIES.forEach(c=>{
+          const pill=document.createElement('button');
+          pill.className='cat-pill'+(current.includes(c.key)?' selected':'');
+          pill.dataset.key=c.key;
+          pill.innerHTML=`<span>${c.badge}</span> ${c.label}`;
+          pill.addEventListener('click',()=>pill.classList.toggle('selected'));
+          container.appendChild(pill);
+        });
+        $('edit-cats-modal').classList.add('open');
       }
     });
   });
@@ -941,12 +1026,28 @@ function buildLogEntry(l) {
   return entry;
 }
 
-// ── USER MANAGEMENT ───────────────────────────────────────
+function buildCatCheckboxes(containerId, selectedKeys=[]) {
+  const container=$(containerId);
+  container.innerHTML='';
+  CATEGORIES.forEach(c=>{
+    const pill=document.createElement('button');
+    pill.className='cat-pill'+(selectedKeys.includes(c.key)?' selected':'');
+    pill.dataset.key=c.key;
+    pill.innerHTML=`<span>${c.badge}</span> ${c.label}`;
+    pill.addEventListener('click',()=>pill.classList.toggle('selected'));
+    container.appendChild(pill);
+  });
+}
+
+function getSelectedCats(containerId) {
+  return Array.from($(containerId).querySelectorAll('.cat-pill.selected')).map(p=>p.dataset.key);
+}
+
 function openCreateUser() {
   $('new-user-username').value='';
   $('new-user-displayname').value='';
   $('new-user-password').value='';
-  $('new-user-cat').value='';
+  buildCatCheckboxes('new-user-cats-checkboxes');
   $('create-user-modal').classList.add('open');
   $('new-user-username').focus();
 }
@@ -955,14 +1056,14 @@ async function confirmCreateUser() {
   const username=$('new-user-username').value.trim().toLowerCase().replace(/\s+/g,'');
   const displayName=$('new-user-displayname').value.trim();
   const password=$('new-user-password').value;
-  const catKey=$('new-user-cat').value;
-  if(!username||!password||!catKey){showToast('Completá todos los campos','#FF4444');return;}
+  const cats=getSelectedCats('new-user-cats-checkboxes');
+  if(!username||!password||cats.length===0){showToast('Completá todos los campos y elegí al menos una categoría','#FF4444');return;}
   if(username===ADMIN_USER){showToast('Ese nombre de usuario no está disponible','#FF4444');return;}
   try {
     await setDoc(doc(db,'users',username),{
       displayName:displayName||username,
       password:hashPass(password),
-      catKey,
+      categories:cats,
       active:true,
       createdAt:new Date().toISOString()
     });
@@ -970,6 +1071,19 @@ async function confirmCreateUser() {
     showToast(`Usuario @${username} creado ✓`);
     await loadAdminTab();
   } catch(e){showToast('Error al crear usuario','#FF4444');}
+}
+
+async function confirmEditCats() {
+  if(!userToEditCats) return;
+  const cats=getSelectedCats('edit-cats-checkboxes');
+  if(cats.length===0){showToast('Elegí al menos una categoría','#FF4444');return;}
+  try {
+    await setDoc(doc(db,'users',userToEditCats.id),{categories:cats},{merge:true});
+    $('edit-cats-modal').classList.remove('open');
+    showToast('Categorías actualizadas ✓');
+    userToEditCats=null;
+    await loadAdminTab();
+  } catch(e){showToast('Error al guardar','#FF4444');}
 }
 
 async function confirmResetPassword() {
@@ -1109,4 +1223,5 @@ function buildExcel(records, filename) {
 </script>
 </body>
 </html>
+
 
