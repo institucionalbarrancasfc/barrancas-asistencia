@@ -11,7 +11,7 @@
   --red:#D42B2B; --red-dark:#A01E1E; --red-light:#FF4444;
   --black:#0A0A0A; --dark:#141414; --card:#1C1C1C; --border:#2A2A2A;
   --text:#F0F0F0; --muted:#888; --green:#22C55E; --yellow:#F59E0B;
-  --purple:#A855F7; --gray:#555;
+  --purple:#A855F7; --gray:#555; --blue:#3B82F6;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
@@ -26,33 +26,40 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
 .logo-badge{width:44px;height:44px;background:var(--red);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;flex-shrink:0;}
 .login-logo h1{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;line-height:1.1;}
 .login-logo p{font-size:12px;color:var(--muted);}
-.login-box label{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
-.login-box input{width:100%;background:var(--dark);border:1px solid var(--border);border-radius:10px;padding:14px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;letter-spacing:3px;outline:none;transition:border-color 0.2s;}
-.login-box input:focus{border-color:var(--red);}
-.login-box input::placeholder{letter-spacing:0;color:var(--gray);}
-.btn-primary{width:100%;background:var(--red);color:white;border:none;border-radius:10px;padding:15px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;margin-top:20px;-webkit-appearance:none;}
+.field-group{margin-bottom:16px;}
+.field-group label{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.field-group input{width:100%;background:var(--dark);border:1px solid var(--border);border-radius:10px;padding:14px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;transition:border-color 0.2s;letter-spacing:0;}
+.field-group input:focus{border-color:var(--red);}
+.field-group input::placeholder{color:var(--gray);}
+.btn-primary{width:100%;background:var(--red);color:white;border:none;border-radius:10px;padding:15px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;margin-top:4px;-webkit-appearance:none;}
 .btn-primary:active{background:var(--red-dark);}
 .error-msg{color:var(--red-light);font-size:13px;margin-top:10px;text-align:center;min-height:18px;}
-.codes-hint{margin-top:20px;padding-top:20px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);text-align:center;line-height:1.6;}
+
+/* SHARED HEADER */
+.top-bar{background:var(--card);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+.top-bar-left{display:flex;align-items:center;gap:10px;}
+.cat-badge{background:var(--red);border-radius:8px;padding:4px 10px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;}
+.top-bar h2{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;}
+.top-bar-right{display:flex;gap:8px;align-items:center;}
+.btn-logout{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-back-home{background:none;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;}
 
 /* COACH HOME */
 #coach-home{background:var(--black);}
 .home-header{background:var(--card);border-bottom:1px solid var(--border);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;}
 .home-header-left{display:flex;align-items:center;gap:10px;}
-.cat-badge{background:var(--red);border-radius:8px;padding:4px 10px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;}
 .home-header h2{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;}
-.btn-logout{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;}
-.home-body{flex:1;padding:28px 20px;display:flex;flex-direction:column;gap:14px;}
-.home-greeting{margin-bottom:8px;}
-.home-greeting h3{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;line-height:1.1;}
-.home-greeting p{color:var(--muted);font-size:14px;margin-top:4px;}
-.home-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;cursor:pointer;display:flex;align-items:center;gap:16px;transition:border-color 0.2s;}
+.home-body{flex:1;padding:24px 20px;display:flex;flex-direction:column;gap:12px;}
+.home-greeting h3{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;line-height:1.1;}
+.home-greeting p{color:var(--muted);font-size:13px;margin-top:4px;}
+.home-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:border-color 0.2s;}
 .home-card:active{border-color:var(--red);}
-.home-card-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
-.home-card-icon.red{background:rgba(212,43,43,0.15);}
-.home-card-icon.gray{background:rgba(255,255,255,0.06);}
-.home-card-info h4{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;margin-bottom:3px;}
-.home-card-info p{font-size:13px;color:var(--muted);line-height:1.4;}
+.home-card-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.hci-red{background:rgba(212,43,43,0.15);}
+.hci-gray{background:rgba(255,255,255,0.06);}
+.hci-blue{background:rgba(59,130,246,0.15);}
+.home-card-info h4{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;margin-bottom:2px;}
+.home-card-info p{font-size:12px;color:var(--muted);line-height:1.4;}
 
 /* DATE MODAL */
 .date-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:100;align-items:flex-end;justify-content:center;}
@@ -62,21 +69,14 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
 .date-modal-box p{font-size:13px;color:var(--muted);margin-bottom:20px;}
 .date-modal-box label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
 .date-input-big{width:100%;background:var(--dark);border:1px solid var(--border);border-radius:12px;padding:16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;color-scheme:dark;margin-bottom:16px;}
-.date-input-big:focus{border-color:var(--red);}
 .date-quick{display:flex;gap:8px;margin-bottom:20px;}
 .quick-btn{flex:1;background:var(--dark);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 6px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:center;-webkit-appearance:none;}
-.quick-btn:active{border-color:var(--red);}
 .btn-go{width:100%;background:var(--red);color:white;border:none;border-radius:12px;padding:16px;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;cursor:pointer;-webkit-appearance:none;}
 .btn-go:active{background:var(--red-dark);}
 .btn-cancel-modal{width:100%;background:none;border:none;color:var(--muted);padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;margin-top:4px;}
 
-/* COACH ATTENDANCE */
+/* ATTENDANCE */
 #coach-screen{background:var(--black);}
-.top-bar{background:var(--card);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
-.top-bar-left{display:flex;align-items:center;gap:10px;}
-.top-bar h2{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;}
-.top-bar-right{display:flex;gap:8px;align-items:center;}
-.btn-back-home{background:none;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;}
 .date-banner{background:rgba(212,43,43,0.1);border-bottom:1px solid rgba(212,43,43,0.2);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;}
 .date-banner span{font-size:12px;color:var(--red-light);text-transform:uppercase;letter-spacing:1px;}
 .date-banner strong{font-size:14px;color:var(--text);}
@@ -108,7 +108,6 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
 .obs-row{display:none;padding:0 16px 10px 16px;margin-top:-4px;margin-bottom:4px;}
 .obs-row.show{display:block;}
 .obs-row input{width:100%;background:var(--dark);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;}
-.obs-row input:focus{border-color:var(--red);}
 .aviso-btns{display:flex;gap:8px;}
 .aviso-btn{flex:1;background:var(--dark);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:10px 8px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;-webkit-appearance:none;}
 .aviso-btn.active{background:rgba(212,43,43,0.2);border-color:var(--red);color:var(--text);}
@@ -118,30 +117,13 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
 .btn-save:disabled{background:var(--border);color:var(--muted);cursor:default;}
 .save-msg{text-align:center;font-size:13px;margin-top:8px;min-height:18px;}
 
-/* HISTORIAL */
-#historial-screen{background:var(--black);}
+/* HISTORIAL / JUGADORES / LOG */
 .hist-header{background:var(--card);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10;}
 .btn-back{background:none;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;}
 .hist-header h2{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;}
 .hist-body{padding:16px;flex:1;}
 
-/* ADMIN */
-#admin-screen{background:var(--black);}
-.admin-header{background:var(--card);border-bottom:1px solid var(--border);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
-.admin-header h2{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;}
-.admin-tag{font-size:11px;color:var(--red);text-transform:uppercase;letter-spacing:1px;background:rgba(212,43,43,0.15);padding:3px 8px;border-radius:20px;}
-.admin-body{padding:16px;}
-.admin-tabs{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
-.admin-tabs::-webkit-scrollbar{display:none;}
-.tab-btn{flex-shrink:0;background:var(--card);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;}
-.tab-btn.active{background:var(--red);border-color:var(--red);color:white;}
-
-/* PLAYER MANAGEMENT */
-.player-mgmt-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
-.player-mgmt-name{font-weight:500;font-size:15px;}
-.btn-delete-player{background:rgba(255,68,68,0.1);border:1px solid rgba(255,68,68,0.3);color:var(--red-light);border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;flex-shrink:0;}
-.btn-delete-player:active{background:rgba(255,68,68,0.25);}
-.players-count{font-size:12px;color:var(--muted);padding:0 4px;margin-bottom:12px;}
+/* YEAR/MONTH GROUPING */
 .group-year{margin-bottom:8px;}
 .year-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--red);border-radius:10px;cursor:pointer;margin-bottom:6px;}
 .year-label{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;}
@@ -156,7 +138,7 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
 .group-month.collapsed .month-body{display:none;}
 .month-body{padding-left:4px;}
 
-/* SHARED RECORDS */
+/* RECORD CARDS */
 .record-group{margin-bottom:12px;}
 .record-date{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;padding:0 4px;}
 .record-card{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:6px;}
@@ -178,22 +160,71 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
 .detail-status.A{background:rgba(212,43,43,0.15);color:var(--red-light);}
 .detail-status.L{background:rgba(168,85,247,0.15);color:var(--purple);}
 .detail-obs{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* PLAYER MANAGEMENT */
+.player-mgmt-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.player-mgmt-name{font-weight:500;font-size:15px;}
+.btn-delete-player{background:rgba(255,68,68,0.1);border:1px solid rgba(255,68,68,0.3);color:var(--red-light);border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;flex-shrink:0;}
+.players-count{font-size:12px;color:var(--muted);padding:0 4px;margin-bottom:12px;}
+
+/* ADMIN */
+#admin-screen{background:var(--black);}
+.admin-header{background:var(--card);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+.admin-header h2{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;}
+.admin-tag{font-size:11px;color:var(--red);text-transform:uppercase;letter-spacing:1px;background:rgba(212,43,43,0.15);padding:3px 8px;border-radius:20px;}
+.admin-body{padding:16px;}
+.admin-tabs{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
+.admin-tabs::-webkit-scrollbar{display:none;}
+.tab-btn{flex-shrink:0;background:var(--card);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+.tab-btn.active{background:var(--red);border-color:var(--red);color:white;}
+
+/* USER MANAGEMENT */
+.user-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px;}
+.user-card-top{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.user-card-info h4{font-weight:600;font-size:15px;}
+.user-card-info p{font-size:12px;color:var(--muted);margin-top:2px;}
+.user-actions{display:flex;gap:8px;flex-shrink:0;}
+.btn-sm{border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;border:1px solid var(--border);-webkit-appearance:none;}
+.btn-sm-red{background:rgba(255,68,68,0.1);border-color:rgba(255,68,68,0.3);color:var(--red-light);}
+.btn-sm-blue{background:rgba(59,130,246,0.1);border-color:rgba(59,130,246,0.3);color:var(--blue);}
+.btn-sm-gray{background:var(--dark);color:var(--muted);}
+.user-status-badge{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;}
+.badge-active{background:rgba(34,197,94,0.15);color:var(--green);}
+.badge-inactive{background:rgba(255,68,68,0.15);color:var(--red-light);}
+
+/* LOG */
+.log-entry{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:6px;}
+.log-entry-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.log-user{font-weight:600;font-size:14px;}
+.log-time{font-size:11px;color:var(--muted);}
+.log-action{font-size:13px;color:var(--muted);}
+.log-action span{color:var(--text);}
+.log-badge{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;margin-left:6px;}
+.lb-login{background:rgba(59,130,246,0.15);color:var(--blue);}
+.lb-save{background:rgba(34,197,94,0.15);color:var(--green);}
+.lb-add{background:rgba(168,85,247,0.15);color:var(--purple);}
+.lb-delete{background:rgba(255,68,68,0.15);color:var(--red-light);}
+.lb-export{background:rgba(245,158,11,0.15);color:var(--yellow);}
+
+/* SHARED */
 .no-records{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;}
 .loading-msg{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;}
 .export-btn{width:100%;background:var(--dark);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:12px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;margin-top:8px;-webkit-appearance:none;}
 
-/* MODAL ADD PLAYER */
+/* MODALS */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:100;align-items:flex-end;justify-content:center;}
 .modal-overlay.open{display:flex;}
 .modal-box{background:var(--card);border-radius:20px 20px 0 0;padding:24px 20px 32px;width:100%;max-width:480px;}
 .modal-box h3{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;margin-bottom:16px;}
+.modal-box p{color:var(--muted);font-size:14px;margin-bottom:20px;}
 .modal-box input,.modal-box select{width:100%;background:var(--dark);border:1px solid var(--border);border-radius:10px;padding:14px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;margin-bottom:12px;}
 .modal-box select option{background:var(--dark);}
 .modal-actions{display:flex;gap:10px;margin-top:4px;}
 .btn-cancel{flex:1;background:none;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;cursor:pointer;}
 .btn-confirm{flex:2;background:var(--red);border:none;color:white;border-radius:10px;padding:14px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;}
+.btn-confirm-blue{background:var(--blue);}
 
-.fab{position:fixed;bottom:88px;right:20px;width:52px;height:52px;background:var(--red);border-radius:14px;border:none;color:white;font-size:26px;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:50;box-shadow:0 4px 20px rgba(212,43,43,0.4);}
+.fab{position:fixed;bottom:24px;right:20px;width:52px;height:52px;background:var(--red);border-radius:14px;border:none;color:white;font-size:26px;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:50;box-shadow:0 4px 20px rgba(212,43,43,0.4);}
 .fab.visible{display:flex;}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);color:white;padding:12px 24px;border-radius:100px;font-size:14px;font-weight:600;z-index:200;transition:transform 0.3s ease;white-space:nowrap;background:var(--green);}
 .toast.show{transform:translateX(-50%) translateY(0);}
@@ -210,11 +241,16 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
       <div class="logo-badge">BFC</div>
       <div><h1>BARRANCAS FC</h1><p>Sistema de Asistencia</p></div>
     </div>
-    <label>Código de acceso</label>
-    <input type="text" id="code-input" placeholder="Ingresá tu código" autocomplete="off" autocorrect="off" spellcheck="false">
+    <div class="field-group">
+      <label>Usuario</label>
+      <input type="text" id="login-user" placeholder="Tu usuario" autocomplete="off" autocorrect="off" spellcheck="false">
+    </div>
+    <div class="field-group">
+      <label>Contraseña</label>
+      <input type="password" id="login-pass" placeholder="Tu contraseña">
+    </div>
     <button class="btn-primary" id="btn-login">INGRESAR</button>
     <div class="error-msg" id="error-msg"></div>
-    <div class="codes-hint">Cada categoría tiene su propio código.<br>Solicitalo al administrador.</div>
   </div>
 </div>
 
@@ -225,33 +261,27 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
       <div class="cat-badge" id="home-cat-badge">—</div>
       <h2 id="home-cat-title">CATEGORÍA</h2>
     </div>
-    <button class="btn-logout" id="btn-logout-home">Salir</button>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:12px;color:var(--muted);" id="home-username"></span>
+      <button class="btn-logout" id="btn-logout-home">Salir</button>
+    </div>
   </div>
   <div class="home-body">
-    <div class="home-greeting">
+    <div class="home-greeting" style="margin-bottom:4px;">
       <h3>¿QUÉ QUERÉS HACER?</h3>
       <p id="home-date-display"></p>
     </div>
     <div class="home-card" id="btn-cargar-asistencia">
-      <div class="home-card-icon red">📋</div>
-      <div class="home-card-info">
-        <h4>CARGAR ASISTENCIA</h4>
-        <p>Seleccioná el día y completá la lista de jugadores</p>
-      </div>
+      <div class="home-card-icon hci-red">📋</div>
+      <div class="home-card-info"><h4>CARGAR ASISTENCIA</h4><p>Seleccioná el día y completá la lista</p></div>
     </div>
     <div class="home-card" id="btn-ver-historial">
-      <div class="home-card-icon gray">🕐</div>
-      <div class="home-card-info">
-        <h4>VER HISTORIAL</h4>
-        <p>Revisá los registros anteriores de tu categoría</p>
-      </div>
+      <div class="home-card-icon hci-gray">🕐</div>
+      <div class="home-card-info"><h4>VER HISTORIAL</h4><p>Registros anteriores de tu categoría</p></div>
     </div>
     <div class="home-card" id="btn-gestionar-jugadores">
-      <div class="home-card-icon gray">👥</div>
-      <div class="home-card-info">
-        <h4>GESTIONAR JUGADORES</h4>
-        <p>Agregá o eliminá jugadores de tu categoría</p>
-      </div>
+      <div class="home-card-icon hci-blue">👥</div>
+      <div class="home-card-info"><h4>GESTIONAR JUGADORES</h4><p>Agregá o eliminá jugadores</p></div>
     </div>
   </div>
 </div>
@@ -285,10 +315,7 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
       <button class="btn-logout" id="btn-logout-coach">Salir</button>
     </div>
   </div>
-  <div class="date-banner">
-    <span>Fecha cargada</span>
-    <strong id="coach-date-display">—</strong>
-  </div>
+  <div class="date-banner"><span>Fecha cargada</span><strong id="coach-date-display">—</strong></div>
   <div class="stats-row">
     <div class="stat-cell pres"><div class="num" id="stat-p">0</div><div class="lbl">Presentes</div></div>
     <div class="stat-cell tard"><div class="num" id="stat-t">0</div><div class="lbl">Tarde</div></div>
@@ -302,7 +329,7 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
   </div>
 </div>
 
-<!-- HISTORIAL -->
+<!-- HISTORIAL COACH -->
 <div id="historial-screen" class="screen">
   <div class="hist-header">
     <button class="btn-back" id="btn-back-hist">← Volver</button>
@@ -314,23 +341,7 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
   </div>
 </div>
 
-<!-- ADMIN -->
-<div id="admin-screen" class="screen">
-  <div class="admin-header">
-    <h2>PANEL ADMIN</h2>
-    <div style="display:flex;gap:8px;align-items:center;">
-      <span class="admin-tag">QUIQUE</span>
-      <button class="btn-logout" id="btn-logout-admin">Salir</button>
-    </div>
-  </div>
-  <div class="admin-body">
-    <div class="admin-tabs" id="admin-tabs"></div>
-    <div id="admin-content"></div>
-    <button class="export-btn" id="btn-export-admin">⬇ EXPORTAR EXCEL</button>
-  </div>
-</div>
-
-<!-- GESTIONAR JUGADORES -->
+<!-- JUGADORES -->
 <div id="jugadores-screen" class="screen">
   <div class="hist-header">
     <button class="btn-back" id="btn-back-jugadores">← Volver</button>
@@ -342,7 +353,27 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
   </div>
 </div>
 
-<!-- Modal agregar jugador (coach) -->
+<!-- ADMIN -->
+<div id="admin-screen" class="screen">
+  <div class="admin-header">
+    <h2>PANEL ADMIN</h2>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span class="admin-tag">ADMIN</span>
+      <button class="btn-logout" id="btn-logout-admin">Salir</button>
+    </div>
+  </div>
+  <div class="admin-body">
+    <div class="admin-tabs" id="admin-tabs"></div>
+    <div id="admin-content"></div>
+    <button class="export-btn" id="btn-export-admin" style="display:none;">⬇ EXPORTAR EXCEL</button>
+  </div>
+</div>
+
+<!-- FAB (admin add player) -->
+<button class="fab" id="fab-add">+</button>
+
+<!-- MODALS -->
+<!-- Add player (coach) -->
 <div class="modal-overlay" id="add-modal-coach">
   <div class="modal-box">
     <h3>AGREGAR JUGADOR</h3>
@@ -354,28 +385,55 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
   </div>
 </div>
 
-<!-- Modal confirmar eliminar -->
-<div class="modal-overlay" id="delete-modal">
+<!-- Add player (admin) -->
+<div class="modal-overlay" id="add-modal-admin">
   <div class="modal-box">
-    <h3>ELIMINAR JUGADOR</h3>
-    <p style="color:var(--muted);font-size:14px;margin-bottom:20px;">¿Estás seguro que querés eliminar a <strong id="delete-player-name" style="color:var(--text)"></strong>? Esta acción no se puede deshacer.</p>
+    <h3>AGREGAR JUGADOR</h3>
+    <input type="text" id="new-player-name-admin" placeholder="Nombre completo">
+    <select id="new-player-cat"><option value="">Seleccionar categoría</option></select>
     <div class="modal-actions">
-      <button class="btn-cancel" id="btn-cancel-delete">Cancelar</button>
-      <button class="btn-confirm" id="btn-confirm-delete" style="background:#FF4444;">ELIMINAR</button>
+      <button class="btn-cancel" id="btn-cancel-add-admin">Cancelar</button>
+      <button class="btn-confirm" id="btn-confirm-add-admin">AGREGAR</button>
     </div>
   </div>
 </div>
-<button class="fab" id="fab-add">+</button>
 
-<!-- Modal agregar jugador -->
-<div class="modal-overlay" id="add-modal">
+<!-- Delete player confirm -->
+<div class="modal-overlay" id="delete-modal">
   <div class="modal-box">
-    <h3>AGREGAR JUGADOR</h3>
-    <input type="text" id="new-player-name" placeholder="Nombre completo">
-    <select id="new-player-cat"><option value="">Seleccionar categoría</option></select>
+    <h3>ELIMINAR JUGADOR</h3>
+    <p>¿Confirmás que querés eliminar a <strong id="delete-player-name" style="color:var(--text)"></strong>? No se puede deshacer.</p>
     <div class="modal-actions">
-      <button class="btn-cancel" id="btn-cancel-add">Cancelar</button>
-      <button class="btn-confirm" id="btn-confirm-add">AGREGAR</button>
+      <button class="btn-cancel" id="btn-cancel-delete">Cancelar</button>
+      <button class="btn-confirm" style="background:#FF4444;" id="btn-confirm-delete">ELIMINAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- Create user -->
+<div class="modal-overlay" id="create-user-modal">
+  <div class="modal-box">
+    <h3>CREAR USUARIO</h3>
+    <input type="text" id="new-user-username" placeholder="Usuario (ej: carlos)" autocomplete="off" autocorrect="off" spellcheck="false">
+    <input type="text" id="new-user-displayname" placeholder="Nombre completo (ej: Carlos López)">
+    <input type="password" id="new-user-password" placeholder="Contraseña">
+    <select id="new-user-cat"><option value="">Seleccionar categoría</option></select>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="btn-cancel-create-user">Cancelar</button>
+      <button class="btn-confirm btn-confirm-blue" id="btn-confirm-create-user">CREAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reset password -->
+<div class="modal-overlay" id="reset-pass-modal">
+  <div class="modal-box">
+    <h3>RESETEAR CONTRASEÑA</h3>
+    <p>Nueva contraseña para <strong id="reset-user-name" style="color:var(--text)"></strong></p>
+    <input type="password" id="new-password-input" placeholder="Nueva contraseña">
+    <div class="modal-actions">
+      <button class="btn-cancel" id="btn-cancel-reset">Cancelar</button>
+      <button class="btn-confirm btn-confirm-blue" id="btn-confirm-reset">GUARDAR</button>
     </div>
   </div>
 </div>
@@ -384,9 +442,11 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {
+  getFirestore, collection, doc, setDoc, getDoc, getDocs,
+  deleteDoc, query, orderBy, where, addDoc, serverTimestamp, limit
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// ── Firebase ──────────────────────────────────────────────
 const db = getFirestore(initializeApp({
   apiKey: "AIzaSyC23cn_UBJnX6BlY1QJkPCZ9NOT2JsBcrM",
   authDomain: "barrancas-asistencia.firebaseapp.com",
@@ -398,29 +458,33 @@ const db = getFirestore(initializeApp({
 
 // ── Config ────────────────────────────────────────────────
 const CATEGORIES = [
-  {code:'primera2026',key:'primera', label:'Primera',  badge:'1RA'},
-  {code:'cuarta2026', key:'cuarta',  label:'Cuarta',   badge:'4TA'},
-  {code:'quinta2026', key:'quinta',  label:'Quinta',   badge:'5TA'},
-  {code:'sexta2026',  key:'sexta',   label:'Sexta',    badge:'6TA'},
-  {code:'septima2026',key:'septima', label:'Séptima',  badge:'7MA'},
-  {code:'octava2026', key:'octava',  label:'Octava',   badge:'8VA'},
-  {code:'novena2026', key:'novena',  label:'Novena',   badge:'9NA'},
-  {code:'inf13_2026', key:'inf2013', label:'Inf. 2013',badge:'2013'},
-  {code:'inf14_2026', key:'inf2014', label:'Inf. 2014',badge:'2014'},
-  {code:'inf15_2026', key:'inf2015', label:'Inf. 2015',badge:'2015'},
-  {code:'inf16_2026', key:'inf2016', label:'Inf. 2016',badge:'2016'},
+  {key:'primera', label:'Primera',  badge:'1RA'},
+  {key:'cuarta',  label:'Cuarta',   badge:'4TA'},
+  {key:'quinta',  label:'Quinta',   badge:'5TA'},
+  {key:'sexta',   label:'Sexta',    badge:'6TA'},
+  {key:'septima', label:'Séptima',  badge:'7MA'},
+  {key:'octava',  label:'Octava',   badge:'8VA'},
+  {key:'novena',  label:'Novena',   badge:'9NA'},
+  {key:'inf2013', label:'Inf. 2013',badge:'2013'},
+  {key:'inf2014', label:'Inf. 2014',badge:'2014'},
+  {key:'inf2015', label:'Inf. 2015',badge:'2015'},
+  {key:'inf2016', label:'Inf. 2016',badge:'2016'},
 ];
-const ADMIN_CODE = 'adminBFC2026';
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = 'adminBFC2026';
 const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
 // ── State ─────────────────────────────────────────────────
-let currentUser = null;
+let currentUser = null; // { type, username, displayName, catKey, catLabel, catBadge }
 let attendance = {};
 let coachPlayers = [];
 let selectedDate = '';
-let adminTab = '';
+let adminTab = 'asistencia';
 let allAdminRecords = [];
 let coachHistorialRecords = [];
+let playerToDelete = null;
+let userToReset = null;
+let allUsers = [];
 
 // ── Helpers ───────────────────────────────────────────────
 const $ = id => document.getElementById(id);
@@ -431,522 +495,613 @@ const showScreen = id => document.querySelectorAll('.screen').forEach(s => s.cla
 const showToast = (msg,color) => { const t=$('toast'); t.textContent=msg; t.style.background=color||'#22C55E'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); };
 const statusClass = s => ({P:'presente',T:'tarde',A:'ausente',L:'lesionado'}[s]||'');
 const statusLabel = (s,obs) => s==='P'?'Presente':s==='T'?'Tarde':s==='L'?'🩹 Lesionado':s==='A'?(obs?`Ausente · ${obs}`:'Ausente'):'';
+const catByKey = k => CATEGORIES.find(c=>c.key===k);
+const hashPass = s => btoa(encodeURIComponent(s)); // simple obfuscation
+
+// ── Log action ────────────────────────────────────────────
+async function logAction(action, detail='') {
+  if (!currentUser) return;
+  try {
+    await addDoc(collection(db,'logs'), {
+      username: currentUser.username,
+      displayName: currentUser.displayName || currentUser.username,
+      action,
+      detail,
+      catKey: currentUser.catKey || 'admin',
+      catLabel: currentUser.catLabel || 'Admin',
+      timestamp: serverTimestamp(),
+      timestampISO: new Date().toISOString()
+    });
+  } catch(e) { console.warn('Log error:', e); }
+}
 
 // ── Event Listeners ───────────────────────────────────────
 $('btn-login').addEventListener('click', handleLogin);
-$('code-input').addEventListener('keydown', e => { if(e.key==='Enter') handleLogin(); });
+$('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') handleLogin(); });
 $('btn-logout-home').addEventListener('click', logout);
 $('btn-logout-coach').addEventListener('click', logout);
 $('btn-logout-admin').addEventListener('click', logout);
 $('btn-cargar-asistencia').addEventListener('click', openDateModal);
 $('btn-ver-historial').addEventListener('click', showHistorial);
-$('btn-cancel-date').addEventListener('click', closeDateModal);
+$('btn-gestionar-jugadores').addEventListener('click', showGestionarJugadores);
+$('btn-cancel-date').addEventListener('click', () => $('date-modal').classList.remove('open'));
 $('btn-go-attendance').addEventListener('click', goToAttendance);
 $('quick-hoy').addEventListener('click', () => $('selected-date').value=todayStr());
 $('quick-ayer').addEventListener('click', () => $('selected-date').value=offsetDate(-1));
 $('quick-ante').addEventListener('click', () => $('selected-date').value=offsetDate(-2));
 $('btn-go-home').addEventListener('click', () => showScreen('coach-home'));
 $('btn-back-hist').addEventListener('click', () => showScreen('coach-home'));
-$('btn-save').addEventListener('click', saveAttendance);
-$('fab-add').addEventListener('click', () => { $('add-modal').classList.add('open'); $('new-player-name').focus(); });
-$('btn-cancel-add').addEventListener('click', () => { $('add-modal').classList.remove('open'); $('new-player-name').value=''; });
-$('btn-confirm-add').addEventListener('click', confirmAddPlayer);
-$('btn-gestionar-jugadores').addEventListener('click', showGestionarJugadores);
 $('btn-back-jugadores').addEventListener('click', () => showScreen('coach-home'));
+$('btn-save').addEventListener('click', saveAttendance);
 $('btn-nuevo-jugador').addEventListener('click', () => { $('new-player-name-coach').value=''; $('add-modal-coach').classList.add('open'); $('new-player-name-coach').focus(); });
 $('btn-cancel-add-coach').addEventListener('click', () => $('add-modal-coach').classList.remove('open'));
 $('btn-confirm-add-coach').addEventListener('click', confirmAddPlayerCoach);
+$('fab-add').addEventListener('click', () => { $('new-player-name-admin').value=''; $('add-modal-admin').classList.add('open'); $('new-player-name-admin').focus(); });
+$('btn-cancel-add-admin').addEventListener('click', () => $('add-modal-admin').classList.remove('open'));
+$('btn-confirm-add-admin').addEventListener('click', confirmAddPlayerAdmin);
 $('btn-cancel-delete').addEventListener('click', () => $('delete-modal').classList.remove('open'));
-$('btn-export-coach').addEventListener('click', () => buildExcel(coachHistorialRecords, `asistencia_${currentUser.catLabel.toLowerCase().replace(/\s/g,'_')}`));
-$('btn-export-admin').addEventListener('click', () => buildExcel(allAdminRecords, 'asistencia_barrancas_todas'));
+$('btn-confirm-delete').addEventListener('click', confirmDeletePlayer);
+$('btn-cancel-create-user').addEventListener('click', () => $('create-user-modal').classList.remove('open'));
+$('btn-confirm-create-user').addEventListener('click', confirmCreateUser);
+$('btn-cancel-reset').addEventListener('click', () => $('reset-pass-modal').classList.remove('open'));
+$('btn-confirm-reset').addEventListener('click', confirmResetPassword);
+$('btn-export-coach').addEventListener('click', () => { logAction('Exportar Excel', currentUser.catLabel); buildExcel(coachHistorialRecords, `asistencia_${currentUser.catLabel.toLowerCase().replace(/\s/g,'_')}`); });
+$('btn-export-admin').addEventListener('click', () => { logAction('Exportar Excel', 'Todas las categorías'); buildExcel(allAdminRecords, 'asistencia_barrancas_todas'); });
 
 // ── LOGIN ─────────────────────────────────────────────────
 async function handleLogin() {
-  const code = $('code-input').value.trim();
+  const username = $('login-user').value.trim().toLowerCase();
+  const password = $('login-pass').value;
   $('error-msg').textContent = '';
   const btn = $('btn-login');
   btn.innerHTML = '<span class="spinner"></span>INGRESANDO...';
   btn.disabled = true;
 
   try {
-    if (code === ADMIN_CODE) {
-      currentUser = {type:'admin'};
+    // Admin hardcoded
+    if (username === ADMIN_USER && password === ADMIN_PASS) {
+      currentUser = { type:'admin', username:'admin', displayName:'Admin', catKey:'admin', catLabel:'Admin' };
+      await logAction('Inicio de sesión', 'Panel Admin');
       showScreen('admin-screen');
       $('fab-add').classList.add('visible');
       await renderAdmin();
-    } else {
-      const cat = CATEGORIES.find(c => c.code === code);
-      if (cat) {
-        currentUser = {type:'coach', catKey:cat.key, catLabel:cat.label, catBadge:cat.badge};
-        await loadCoachPlayers();
-        $('home-cat-badge').textContent = cat.badge;
-        $('home-cat-title').textContent = cat.label.toUpperCase();
-        $('home-date-display').textContent = formatDate(todayStr());
-        showScreen('coach-home');
-      } else {
-        $('error-msg').textContent = 'Código incorrecto. Intentá de nuevo.';
-      }
+      btn.innerHTML='INGRESAR'; btn.disabled=false;
+      return;
     }
+
+    // Check Firebase users collection
+    const userDoc = await getDoc(doc(db,'users', username));
+    if (!userDoc.exists()) {
+      $('error-msg').textContent = 'Usuario o contraseña incorrectos.';
+      btn.innerHTML='INGRESAR'; btn.disabled=false;
+      return;
+    }
+    const userData = userDoc.data();
+    if (!userData.active) {
+      $('error-msg').textContent = 'Tu usuario está desactivado. Contactá al admin.';
+      btn.innerHTML='INGRESAR'; btn.disabled=false;
+      return;
+    }
+    if (userData.password !== hashPass(password)) {
+      $('error-msg').textContent = 'Usuario o contraseña incorrectos.';
+      btn.innerHTML='INGRESAR'; btn.disabled=false;
+      return;
+    }
+
+    const cat = catByKey(userData.catKey);
+    currentUser = {
+      type: 'coach',
+      username,
+      displayName: userData.displayName || username,
+      catKey: userData.catKey,
+      catLabel: cat?.label || userData.catKey,
+      catBadge: cat?.badge || userData.catKey.toUpperCase()
+    };
+
+    await logAction('Inicio de sesión', currentUser.catLabel);
+    await loadCoachPlayers();
+    $('home-cat-badge').textContent = currentUser.catBadge;
+    $('home-cat-title').textContent = currentUser.catLabel.toUpperCase();
+    $('home-username').textContent = currentUser.displayName;
+    $('home-date-display').textContent = formatDate(todayStr());
+    showScreen('coach-home');
+
   } catch(e) {
     $('error-msg').textContent = 'Error de conexión. Revisá tu internet.';
     console.error(e);
   }
-
-  btn.innerHTML = 'INGRESAR';
-  btn.disabled = false;
+  btn.innerHTML='INGRESAR'; btn.disabled=false;
 }
 
 function logout() {
-  currentUser = null; attendance = {}; coachPlayers = []; selectedDate = '';
-  $('code-input').value = '';
-  $('error-msg').textContent = '';
+  currentUser=null; attendance={}; coachPlayers=[]; selectedDate='';
+  $('login-user').value=''; $('login-pass').value='';
+  $('error-msg').textContent='';
   $('fab-add').classList.remove('visible');
+  $('btn-export-admin').style.display='none';
   showScreen('login-screen');
 }
 
-// ── COACH HOME ────────────────────────────────────────────
+// ── COACH ─────────────────────────────────────────────────
 async function loadCoachPlayers() {
   const snap = await getDocs(collection(db,'players'));
-  coachPlayers = [];
+  coachPlayers=[];
   snap.forEach(d => { if(d.data().category===currentUser.catKey) coachPlayers.push(d.data().name); });
   coachPlayers.sort();
 }
 
-// ── DATE MODAL ────────────────────────────────────────────
 function openDateModal() {
   $('selected-date').value = todayStr();
   $('date-modal').classList.add('open');
 }
-function closeDateModal() {
-  $('date-modal').classList.remove('open');
-}
+
 async function goToAttendance() {
   const dateVal = $('selected-date').value;
   if (!dateVal) { showToast('Seleccioná una fecha','#FF4444'); return; }
   selectedDate = dateVal;
-  closeDateModal();
+  $('date-modal').classList.remove('open');
   await renderAttendance();
 }
 
-// ── ATTENDANCE ────────────────────────────────────────────
 async function renderAttendance() {
   $('coach-cat-badge').textContent = currentUser.catBadge;
   $('coach-title').textContent = currentUser.catLabel.toUpperCase();
   $('coach-date-display').textContent = formatDate(selectedDate);
-  $('player-list').innerHTML = '<div class="loading-msg"><span class="spinner"></span>Cargando jugadores...</div>';
+  $('player-list').innerHTML = '<div class="loading-msg"><span class="spinner"></span>Cargando...</div>';
   showScreen('coach-screen');
-
   const recSnap = await getDocs(query(collection(db,'attendance'), where('category','==',currentUser.catKey), where('date','==',selectedDate)));
-  attendance = {};
+  attendance={};
   if (!recSnap.empty) {
     const existing = recSnap.docs[0].data().players;
-    coachPlayers.forEach(p => { attendance[p] = existing[p]||{status:null,obs:''}; });
+    coachPlayers.forEach(p => { attendance[p]=existing[p]||{status:null,obs:''}; });
   } else {
-    coachPlayers.forEach(p => { attendance[p] = {status:null,obs:''}; });
+    coachPlayers.forEach(p => { attendance[p]={status:null,obs:''}; });
   }
-  renderPlayerList();
-  updateStats();
+  renderPlayerList(); updateStats();
 }
 
 function renderPlayerList() {
   const players = Object.keys(attendance);
   const list = $('player-list');
-  list.innerHTML = '';
+  list.innerHTML='';
   if (players.length===0) { list.innerHTML='<div class="no-records">No hay jugadores en esta categoría.</div>'; return; }
-
   players.forEach((name,i) => {
     const st = attendance[name];
     const card = document.createElement('div');
-    card.className = 'player-card'+(st.status?' is-'+statusClass(st.status):'');
-    card.innerHTML = `
+    card.className='player-card'+(st.status?' is-'+statusClass(st.status):'');
+    card.innerHTML=`
       <div class="player-num">${i+1}</div>
       <div class="player-info">
         <div class="player-name">${name}</div>
         <div class="player-obs">${st.status==='A'&&st.obs?st.obs:(st.status!=='A'?(st.obs||''):'')}</div>
       </div>
       <div class="status-btns">
-        <button class="sbtn ${st.status==='P'?'active-p':''}" data-idx="${i}" data-st="P" title="Presente">✓</button>
-        <button class="sbtn ${st.status==='T'?'active-t':''}" data-idx="${i}" data-st="T" title="Tarde">⏱</button>
-        <button class="sbtn ${st.status==='A'?'active-a':''}" data-idx="${i}" data-st="A" title="Ausente">✕</button>
-        <button class="sbtn ${st.status==='L'?'active-l':''}" data-idx="${i}" data-st="L" title="Lesionado">🩹</button>
+        <button class="sbtn ${st.status==='P'?'active-p':''}" data-idx="${i}" data-st="P">✓</button>
+        <button class="sbtn ${st.status==='T'?'active-t':''}" data-idx="${i}" data-st="T">⏱</button>
+        <button class="sbtn ${st.status==='A'?'active-a':''}" data-idx="${i}" data-st="A">✕</button>
+        <button class="sbtn ${st.status==='L'?'active-l':''}" data-idx="${i}" data-st="L">🩹</button>
       </div>`;
     list.appendChild(card);
-
     const obsRow = document.createElement('div');
-    obsRow.className = 'obs-row'+(st.status?' show':'');
-    obsRow.id = 'obs-row-'+i;
+    obsRow.className='obs-row'+(st.status?' show':'');
+    obsRow.id='obs-row-'+i;
     if (st.status==='A') {
-      obsRow.innerHTML = `<div class="aviso-btns">
+      obsRow.innerHTML=`<div class="aviso-btns">
         <button class="aviso-btn ${st.obs==='Con aviso'?'active':''}" data-idx="${i}" data-val="Con aviso">📩 Con aviso</button>
         <button class="aviso-btn ${st.obs==='Sin aviso'?'active':''}" data-idx="${i}" data-val="Sin aviso">🔕 Sin aviso</button>
       </div>`;
     } else if (st.status) {
-      obsRow.innerHTML = `<input type="text" placeholder="Observación (opcional)" value="${st.obs||''}" data-idx="${i}">`;
+      obsRow.innerHTML=`<input type="text" placeholder="Observación (opcional)" value="${st.obs||''}" data-idx="${i}">`;
     }
     list.appendChild(obsRow);
   });
-
-  // Status buttons
   list.querySelectorAll('.sbtn').forEach(btn => {
     btn.addEventListener('click', () => {
-      const idx = parseInt(btn.dataset.idx);
-      const s = btn.dataset.st;
-      const name = Object.keys(attendance)[idx];
-      attendance[name].status = attendance[name].status===s ? null : s;
-      if (attendance[name].status!=='A') attendance[name].obs='';
-      renderPlayerList();
-      updateStats();
-      if (attendance[name].status) setTimeout(()=>{ const r=$('obs-row-'+idx); if(r)r.classList.add('show'); },10);
+      const idx=parseInt(btn.dataset.idx), s=btn.dataset.st;
+      const name=Object.keys(attendance)[idx];
+      attendance[name].status=attendance[name].status===s?null:s;
+      if(attendance[name].status!=='A') attendance[name].obs='';
+      renderPlayerList(); updateStats();
+      if(attendance[name].status) setTimeout(()=>{ const r=$('obs-row-'+idx); if(r)r.classList.add('show'); },10);
     });
   });
-
-  // Aviso buttons
   list.querySelectorAll('.aviso-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      const idx = parseInt(btn.dataset.idx);
-      const val = btn.dataset.val;
-      const name = Object.keys(attendance)[idx];
-      attendance[name].obs = attendance[name].obs===val ? '' : val;
+      const idx=parseInt(btn.dataset.idx), val=btn.dataset.val;
+      const name=Object.keys(attendance)[idx];
+      attendance[name].obs=attendance[name].obs===val?'':val;
       renderPlayerList();
     });
   });
-
-  // Obs inputs
   list.querySelectorAll('input[data-idx]').forEach(input => {
     input.addEventListener('input', () => {
-      const idx = parseInt(input.dataset.idx);
-      const name = Object.keys(attendance)[idx];
-      attendance[name].obs = input.value;
+      attendance[Object.keys(attendance)[parseInt(input.dataset.idx)]].obs=input.value;
     });
   });
 }
 
 function updateStats() {
-  const vals = Object.values(attendance);
-  $('stat-p').textContent = vals.filter(v=>v.status==='P').length;
-  $('stat-t').textContent = vals.filter(v=>v.status==='T').length;
-  $('stat-a').textContent = vals.filter(v=>v.status==='A').length;
-  $('stat-l').textContent = vals.filter(v=>v.status==='L').length;
+  const vals=Object.values(attendance);
+  $('stat-p').textContent=vals.filter(v=>v.status==='P').length;
+  $('stat-t').textContent=vals.filter(v=>v.status==='T').length;
+  $('stat-a').textContent=vals.filter(v=>v.status==='A').length;
+  $('stat-l').textContent=vals.filter(v=>v.status==='L').length;
 }
 
 async function saveAttendance() {
-  const hasAny = Object.values(attendance).some(v=>v.status!==null);
-  if (!hasAny) {
-    $('save-msg').textContent='Marcá al menos un jugador antes de guardar.';
-    $('save-msg').style.color='#FF4444';
-    setTimeout(()=>{$('save-msg').textContent='';},3000);
-    return;
-  }
-  const btn = $('btn-save');
+  const hasAny=Object.values(attendance).some(v=>v.status!==null);
+  if (!hasAny) { const m=$('save-msg'); m.textContent='Marcá al menos un jugador.'; m.style.color='#FF4444'; setTimeout(()=>{m.textContent='';},3000); return; }
+  const btn=$('btn-save');
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span>GUARDANDO...';
   try {
     await setDoc(doc(db,'attendance',`${currentUser.catKey}_${selectedDate}`),{
       category:currentUser.catKey, categoryLabel:currentUser.catLabel,
-      date:selectedDate, players:attendance, savedAt:new Date().toISOString()
+      date:selectedDate, players:attendance, savedAt:new Date().toISOString(),
+      savedBy: currentUser.username
     });
-    $('save-msg').textContent='✓ Asistencia guardada';
-    $('save-msg').style.color='#22C55E';
+    await logAction('Guardar asistencia', `${currentUser.catLabel} — ${selectedDate}`);
+    const m=$('save-msg'); m.textContent='✓ Asistencia guardada'; m.style.color='#22C55E';
     showToast('Asistencia guardada ✓');
-    setTimeout(()=>{$('save-msg').textContent='';},3000);
-  } catch(e) {
-    $('save-msg').textContent='Error al guardar. Revisá tu conexión.';
-    $('save-msg').style.color='#FF4444';
-    setTimeout(()=>{$('save-msg').textContent='';},4000);
-  }
+    setTimeout(()=>{m.textContent='';},3000);
+  } catch(e) { const m=$('save-msg'); m.textContent='Error al guardar.'; m.style.color='#FF4444'; setTimeout(()=>{m.textContent='';},3000); }
   btn.disabled=false; btn.innerHTML='GUARDAR ASISTENCIA';
 }
 
 // ── HISTORIAL ─────────────────────────────────────────────
 async function showHistorial() {
   showScreen('historial-screen');
-  $('hist-title').textContent = `HISTORIAL — ${currentUser.catLabel.toUpperCase()}`;
-  const body = $('hist-body');
-  body.innerHTML = '<div class="loading-msg"><span class="spinner"></span>Cargando historial...</div>';
-  const snap = await getDocs(query(collection(db,'attendance'), where('category','==',currentUser.catKey), orderBy('date','desc')));
-  coachHistorialRecords = [];
-  snap.forEach(d => coachHistorialRecords.push(d.data()));
-  body.innerHTML = '';
-  if (coachHistorialRecords.length===0) { body.innerHTML='<div class="no-records">Aún no hay registros para esta categoría.</div>'; return; }
+  $('hist-title').textContent=`HISTORIAL — ${currentUser.catLabel.toUpperCase()}`;
+  const body=$('hist-body');
+  body.innerHTML='<div class="loading-msg"><span class="spinner"></span>Cargando...</div>';
+  const snap=await getDocs(query(collection(db,'attendance'),where('category','==',currentUser.catKey),orderBy('date','desc')));
+  coachHistorialRecords=[];
+  snap.forEach(d=>coachHistorialRecords.push(d.data()));
+  body.innerHTML='';
+  if(coachHistorialRecords.length===0){body.innerHTML='<div class="no-records">Aún no hay registros.</div>';return;}
   body.appendChild(buildGroupedRecords(coachHistorialRecords));
 }
 
-// ── ADMIN ─────────────────────────────────────────────────
-async function renderAdmin() {
-  const tabs = $('admin-tabs');
-  tabs.innerHTML = ''; adminTab = '';
-
-  const makeTab = (label, key) => {
-    const btn = document.createElement('button');
-    btn.className = 'tab-btn'+(key===''?' active':'');
-    btn.textContent = label;
-    btn.addEventListener('click', () => {
-      adminTab = key;
-      tabs.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      renderAdminContent();
-    });
-    tabs.appendChild(btn);
-  };
-  makeTab('Todas','');
-  CATEGORIES.forEach(c => makeTab(c.label, c.key));
-
-  const sel = $('new-player-cat');
-  sel.innerHTML = '<option value="">Seleccionar categoría</option>';
-  CATEGORIES.forEach(c => { const o=document.createElement('option'); o.value=c.key; o.textContent=c.label; sel.appendChild(o); });
-
-  await loadAdminRecords();
-}
-
-async function loadAdminRecords() {
-  $('admin-content').innerHTML = '<div class="loading-msg"><span class="spinner"></span>Cargando registros...</div>';
-  const snap = await getDocs(query(collection(db,'attendance'), orderBy('date','desc')));
-  allAdminRecords = [];
-  snap.forEach(d => allAdminRecords.push(d.data()));
-  renderAdminContent();
-}
-
-function renderAdminContent() {
-  const content = $('admin-content');
-  content.innerHTML = '';
-  const records = adminTab ? allAdminRecords.filter(r=>r.category===adminTab) : allAdminRecords;
-  if (records.length===0) { content.innerHTML='<div class="no-records">Aún no hay registros de asistencia.</div>'; return; }
-  content.appendChild(buildGroupedRecords(records));
-}
-
-// ── GROUPED RECORDS ───────────────────────────────────────
-function buildGroupedRecords(records) {
-  const container = document.createElement('div');
-  const grouped = {};
-  records.forEach(rec => {
-    const [year,month] = rec.date.split('-');
-    if (!grouped[year]) grouped[year]={};
-    if (!grouped[year][month]) grouped[year][month]=[];
-    grouped[year][month].push(rec);
-  });
-
-  Object.keys(grouped).sort((a,b)=>b-a).forEach(year => {
-    const yearEl = document.createElement('div');
-    yearEl.className = 'group-year';
-
-    const yearHeader = document.createElement('div');
-    yearHeader.className = 'year-header';
-    yearHeader.innerHTML = `<span class="year-label">${year}</span><span class="year-arrow">▾</span>`;
-    yearHeader.addEventListener('click', () => yearEl.classList.toggle('collapsed'));
-
-    const yearBody = document.createElement('div');
-    yearBody.className = 'year-body';
-
-    Object.keys(grouped[year]).sort((a,b)=>b-a).forEach(month => {
-      const recs = grouped[year][month];
-      const monthEl = document.createElement('div');
-      monthEl.className = 'group-month';
-
-      const monthHeader = document.createElement('div');
-      monthHeader.className = 'month-header';
-      monthHeader.innerHTML = `<span class="month-label">${MONTHS[parseInt(month)-1]}</span><span class="month-count">${recs.length} registro${recs.length!==1?'s':''}</span><span class="year-arrow">▾</span>`;
-      monthHeader.addEventListener('click', () => monthEl.classList.toggle('collapsed'));
-
-      const monthBody = document.createElement('div');
-      monthBody.className = 'month-body';
-      recs.forEach(rec => monthBody.appendChild(buildRecordCard(rec)));
-
-      monthEl.appendChild(monthHeader);
-      monthEl.appendChild(monthBody);
-      yearBody.appendChild(monthEl);
-    });
-
-    yearEl.appendChild(yearHeader);
-    yearEl.appendChild(yearBody);
-    container.appendChild(yearEl);
-  });
-  return container;
-}
-
-function buildRecordCard(rec) {
-  const group = document.createElement('div');
-  group.className = 'record-group';
-  group.innerHTML = `<div class="record-date">${rec.categoryLabel} — ${formatDate(rec.date)}</div>`;
-
-  const players = rec.players;
-  const p = Object.values(players).filter(v=>v.status==='P').length;
-  const t = Object.values(players).filter(v=>v.status==='T').length;
-  const a = Object.values(players).filter(v=>v.status==='A').length;
-  const l = Object.values(players).filter(v=>v.status==='L').length;
-
-  const card = document.createElement('div');
-  card.className = 'record-card';
-
-  const header = document.createElement('div');
-  header.className = 'record-card-header';
-  header.innerHTML = `
-    <h4>${Object.keys(players).length} jugadores</h4>
-    <div class="record-pills">
-      <span class="pill p">${p} P</span><span class="pill t">${t} T</span><span class="pill a">${a} A</span>
-      ${l>0?`<span class="pill l">${l} 🩹</span>`:''}
-    </div>`;
-
-  const detail = document.createElement('div');
-  detail.className = 'record-detail';
-  Object.entries(players).forEach(([name,data]) => {
-    if (!data.status) return;
-    const row = document.createElement('div');
-    row.className = 'detail-row';
-    row.innerHTML = `
-      <div><div>${name}</div>${data.obs?`<div class="detail-obs">${data.obs}</div>`:''}</div>
-      <span class="detail-status ${data.status}">${statusLabel(data.status,data.obs)}</span>`;
-    detail.appendChild(row);
-  });
-
-  header.addEventListener('click', () => detail.classList.toggle('show'));
-  card.appendChild(header);
-  card.appendChild(detail);
-  group.appendChild(card);
-  return group;
-}
-
-// ── ADD PLAYER (ADMIN) ────────────────────────────────────
-async function confirmAddPlayer() {
-  const name = $('new-player-name').value.trim();
-  const catKey = $('new-player-cat').value;
-  const catLabel = CATEGORIES.find(c=>c.key===catKey)?.label||catKey;
-  if (!name||!catKey) return;
-  try {
-    const docId = `${catKey}_${name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'')}`;
-    await setDoc(doc(db,'players',docId),{name,category:catKey,categoryLabel:catLabel});
-    $('add-modal').classList.remove('open');
-    $('new-player-name').value='';
-    showToast(`${name} agregado ✓`);
-    await loadAdminRecords();
-  } catch(e) { showToast('Error al agregar','#FF4444'); }
-}
-
-// ── GESTIONAR JUGADORES (COACH) ───────────────────────────
-let playerToDelete = null;
-
+// ── JUGADORES ─────────────────────────────────────────────
 async function showGestionarJugadores() {
   showScreen('jugadores-screen');
-  const {catKey, catLabel} = currentUser;
-  $('jugadores-title').textContent = `JUGADORES — ${catLabel.toUpperCase()}`;
-  const body = $('jugadores-body');
-  body.innerHTML = '<div class="loading-msg"><span class="spinner"></span>Cargando...</div>';
-
-  // Reload players fresh
-  const snap = await getDocs(collection(db,'players'));
-  coachPlayers = [];
-  const playerDocs = {};
-  snap.forEach(d => {
-    if (d.data().category === catKey) {
-      coachPlayers.push(d.data().name);
-      playerDocs[d.data().name] = d.id;
-    }
-  });
+  $('jugadores-title').textContent=`JUGADORES — ${currentUser.catLabel.toUpperCase()}`;
+  const body=$('jugadores-body');
+  body.innerHTML='<div class="loading-msg"><span class="spinner"></span>Cargando...</div>';
+  const snap=await getDocs(collection(db,'players'));
+  coachPlayers=[];
+  const playerDocs={};
+  snap.forEach(d=>{if(d.data().category===currentUser.catKey){coachPlayers.push(d.data().name);playerDocs[d.data().name]=d.id;}});
   coachPlayers.sort();
-
-  body.innerHTML = '';
-  if (coachPlayers.length === 0) {
-    body.innerHTML = '<div class="no-records">No hay jugadores en esta categoría todavía.</div>';
-    return;
-  }
-
-  body.innerHTML = `<div class="players-count">${coachPlayers.length} jugador${coachPlayers.length!==1?'es':''}</div>`;
-  coachPlayers.forEach(name => {
-    const card = document.createElement('div');
-    card.className = 'player-mgmt-card';
-    card.innerHTML = `
-      <span class="player-mgmt-name">${name}</span>
-      <button class="btn-delete-player" data-name="${name}" data-docid="${playerDocs[name]}">🗑 Eliminar</button>
-    `;
+  body.innerHTML='';
+  if(coachPlayers.length===0){body.innerHTML='<div class="no-records">No hay jugadores aún.</div>';return;}
+  body.innerHTML=`<div class="players-count">${coachPlayers.length} jugador${coachPlayers.length!==1?'es':''}</div>`;
+  coachPlayers.forEach(name=>{
+    const card=document.createElement('div'); card.className='player-mgmt-card';
+    card.innerHTML=`<span class="player-mgmt-name">${name}</span><button class="btn-delete-player" data-name="${name}" data-docid="${playerDocs[name]}">🗑 Eliminar</button>`;
     body.appendChild(card);
   });
-
-  body.querySelectorAll('.btn-delete-player').forEach(btn => {
-    btn.addEventListener('click', () => {
-      playerToDelete = { name: btn.dataset.name, docId: btn.dataset.docid };
-      $('delete-player-name').textContent = btn.dataset.name;
+  body.querySelectorAll('.btn-delete-player').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      playerToDelete={name:btn.dataset.name,docId:btn.dataset.docid};
+      $('delete-player-name').textContent=btn.dataset.name;
       $('delete-modal').classList.add('open');
     });
   });
 }
 
 async function confirmAddPlayerCoach() {
-  const name = $('new-player-name-coach').value.trim();
-  if (!name) return;
-  const { catKey, catLabel } = currentUser;
+  const name=$('new-player-name-coach').value.trim();
+  if(!name) return;
   try {
-    const docId = `${catKey}_${name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'')}`;
-    await setDoc(doc(db,'players',docId), {name, category:catKey, categoryLabel:catLabel});
+    const docId=`${currentUser.catKey}_${name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'')}`;
+    await setDoc(doc(db,'players',docId),{name,category:currentUser.catKey,categoryLabel:currentUser.catLabel});
+    await logAction('Agregar jugador',`${name} en ${currentUser.catLabel}`);
     $('add-modal-coach').classList.remove('open');
     showToast(`${name} agregado ✓`);
     await showGestionarJugadores();
-  } catch(e) { showToast('Error al agregar','#FF4444'); }
+  } catch(e){showToast('Error al agregar','#FF4444');}
 }
 
 async function confirmDeletePlayer() {
-  if (!playerToDelete) return;
+  if(!playerToDelete) return;
   try {
-    await deleteDoc(doc(db,'players', playerToDelete.docId));
+    await deleteDoc(doc(db,'players',playerToDelete.docId));
+    await logAction('Eliminar jugador',`${playerToDelete.name} de ${currentUser.catLabel}`);
     $('delete-modal').classList.remove('open');
     showToast(`${playerToDelete.name} eliminado`,'#888');
-    playerToDelete = null;
-    await showGestionarJugadores();
-  } catch(e) { showToast('Error al eliminar','#FF4444'); }
+    playerToDelete=null;
+    if(document.getElementById('jugadores-screen').classList.contains('active')) await showGestionarJugadores();
+  } catch(e){showToast('Error al eliminar','#FF4444');}
+}
+
+// ── ADMIN ─────────────────────────────────────────────────
+async function renderAdmin() {
+  const tabs=$('admin-tabs');
+  tabs.innerHTML='';
+  const ADMIN_TABS=[
+    {key:'asistencia',label:'Asistencia'},
+    {key:'usuarios',label:'Usuarios'},
+    {key:'log',label:'Log de acciones'},
+  ];
+  ADMIN_TABS.forEach(t=>{
+    const btn=document.createElement('button');
+    btn.className='tab-btn'+(adminTab===t.key?' active':'');
+    btn.textContent=t.label;
+    btn.addEventListener('click',async()=>{
+      adminTab=t.key;
+      tabs.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      await loadAdminTab();
+    });
+    tabs.appendChild(btn);
+  });
+
+  // Populate category selects
+  [('new-player-cat'),('new-user-cat')].forEach(id=>{
+    const sel=$(id);
+    if(!sel) return;
+    sel.innerHTML='<option value="">Seleccionar categoría</option>';
+    CATEGORIES.forEach(c=>{const o=document.createElement('option');o.value=c.key;o.textContent=c.label;sel.appendChild(o);});
+  });
+
+  $('btn-export-admin').style.display='none';
+  await loadAdminTab();
+}
+
+async function loadAdminTab() {
+  const content=$('admin-content');
+  content.innerHTML='<div class="loading-msg"><span class="spinner"></span>Cargando...</div>';
+  $('btn-export-admin').style.display='none';
+  $('fab-add').classList.remove('visible');
+
+  if (adminTab==='asistencia') {
+    $('fab-add').classList.add('visible');
+    $('btn-export-admin').style.display='block';
+    const snap=await getDocs(query(collection(db,'attendance'),orderBy('date','desc')));
+    allAdminRecords=[];
+    snap.forEach(d=>allAdminRecords.push(d.data()));
+    content.innerHTML='';
+    if(allAdminRecords.length===0){content.innerHTML='<div class="no-records">Aún no hay registros.</div>';return;}
+    content.appendChild(buildGroupedRecords(allAdminRecords));
+
+  } else if (adminTab==='usuarios') {
+    const snap=await getDocs(collection(db,'users'));
+    allUsers=[];
+    snap.forEach(d=>allUsers.push({id:d.id,...d.data()}));
+    allUsers.sort((a,b)=>a.id.localeCompare(b.id));
+    content.innerHTML='';
+    const addBtn=document.createElement('button');
+    addBtn.className='btn-save';
+    addBtn.style.cssText='font-size:15px;padding:12px;margin-bottom:16px;';
+    addBtn.textContent='+ CREAR USUARIO';
+    addBtn.addEventListener('click',openCreateUser);
+    content.appendChild(addBtn);
+    if(allUsers.length===0){const d=document.createElement('div');d.className='no-records';d.textContent='No hay usuarios creados todavía.';content.appendChild(d);return;}
+    allUsers.forEach(u=>content.appendChild(buildUserCard(u)));
+
+  } else if (adminTab==='log') {
+    const snap=await getDocs(query(collection(db,'logs'),orderBy('timestamp','desc'),limit(200)));
+    const logs=[];
+    snap.forEach(d=>logs.push(d.data()));
+    content.innerHTML='';
+    if(logs.length===0){content.innerHTML='<div class="no-records">No hay acciones registradas todavía.</div>';return;}
+    logs.forEach(l=>content.appendChild(buildLogEntry(l)));
+  }
+}
+
+function buildUserCard(u) {
+  const card=document.createElement('div'); card.className='user-card';
+  const cat=catByKey(u.catKey);
+  card.innerHTML=`
+    <div class="user-card-top">
+      <div class="user-card-info">
+        <h4>${u.displayName||u.id} <span class="user-status-badge ${u.active?'badge-active':'badge-inactive'}">${u.active?'Activo':'Inactivo'}</span></h4>
+        <p>@${u.id} · ${cat?.label||u.catKey}</p>
+      </div>
+      <div class="user-actions">
+        <button class="btn-sm btn-sm-blue" data-uid="${u.id}" data-name="${u.displayName||u.id}" data-action="reset">🔑 Resetear</button>
+        <button class="btn-sm ${u.active?'btn-sm-red':'btn-sm-gray'}" data-uid="${u.id}" data-active="${u.active}" data-action="toggle">${u.active?'Desactivar':'Activar'}</button>
+      </div>
+    </div>`;
+  card.querySelectorAll('[data-action]').forEach(btn=>{
+    btn.addEventListener('click',async()=>{
+      if(btn.dataset.action==='reset'){
+        userToReset={id:btn.dataset.uid,name:btn.dataset.name};
+        $('reset-user-name').textContent=btn.dataset.name;
+        $('new-password-input').value='';
+        $('reset-pass-modal').classList.add('open');
+      } else if(btn.dataset.action==='toggle'){
+        const newActive=btn.dataset.active==='true'?false:true;
+        await setDoc(doc(db,'users',btn.dataset.uid),{active:newActive},{merge:true});
+        showToast(newActive?'Usuario activado':'Usuario desactivado');
+        await loadAdminTab();
+      }
+    });
+  });
+  return card;
+}
+
+function buildLogEntry(l) {
+  const entry=document.createElement('div'); entry.className='log-entry';
+  const actionTypes={
+    'Inicio de sesión':'lb-login',
+    'Guardar asistencia':'lb-save',
+    'Agregar jugador':'lb-add',
+    'Eliminar jugador':'lb-delete',
+    'Exportar Excel':'lb-export'
+  };
+  const badgeClass=actionTypes[l.action]||'lb-login';
+  const ts=l.timestampISO?new Date(l.timestampISO).toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';
+  entry.innerHTML=`
+    <div class="log-entry-top">
+      <span class="log-user">${l.displayName||l.username} <span class="log-badge ${badgeClass}">${l.action}</span></span>
+      <span class="log-time">${ts}</span>
+    </div>
+    <div class="log-action">${l.detail?`<span>${l.detail}</span>`:''}</div>`;
+  return entry;
+}
+
+// ── USER MANAGEMENT ───────────────────────────────────────
+function openCreateUser() {
+  $('new-user-username').value='';
+  $('new-user-displayname').value='';
+  $('new-user-password').value='';
+  $('new-user-cat').value='';
+  $('create-user-modal').classList.add('open');
+  $('new-user-username').focus();
+}
+
+async function confirmCreateUser() {
+  const username=$('new-user-username').value.trim().toLowerCase().replace(/\s+/g,'');
+  const displayName=$('new-user-displayname').value.trim();
+  const password=$('new-user-password').value;
+  const catKey=$('new-user-cat').value;
+  if(!username||!password||!catKey){showToast('Completá todos los campos','#FF4444');return;}
+  if(username===ADMIN_USER){showToast('Ese nombre de usuario no está disponible','#FF4444');return;}
+  try {
+    await setDoc(doc(db,'users',username),{
+      displayName:displayName||username,
+      password:hashPass(password),
+      catKey,
+      active:true,
+      createdAt:new Date().toISOString()
+    });
+    $('create-user-modal').classList.remove('open');
+    showToast(`Usuario @${username} creado ✓`);
+    await loadAdminTab();
+  } catch(e){showToast('Error al crear usuario','#FF4444');}
+}
+
+async function confirmResetPassword() {
+  const newPass=$('new-password-input').value;
+  if(!newPass||!userToReset){showToast('Ingresá una contraseña','#FF4444');return;}
+  try {
+    await setDoc(doc(db,'users',userToReset.id),{password:hashPass(newPass)},{merge:true});
+    $('reset-pass-modal').classList.remove('open');
+    showToast(`Contraseña de @${userToReset.id} actualizada ✓`);
+    userToReset=null;
+  } catch(e){showToast('Error al resetear','#FF4444');}
+}
+
+// ── ADD PLAYER (ADMIN) ────────────────────────────────────
+async function confirmAddPlayerAdmin() {
+  const name=$('new-player-name-admin').value.trim();
+  const catKey=$('new-player-cat').value;
+  const catLabel=catByKey(catKey)?.label||catKey;
+  if(!name||!catKey) return;
+  try {
+    const docId=`${catKey}_${name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'')}`;
+    await setDoc(doc(db,'players',docId),{name,category:catKey,categoryLabel:catLabel});
+    await logAction('Agregar jugador',`${name} en ${catLabel}`);
+    $('add-modal-admin').classList.remove('open');
+    showToast(`${name} agregado ✓`);
+    await loadAdminTab();
+  } catch(e){showToast('Error al agregar','#FF4444');}
+}
+
+// ── GROUPED RECORDS ───────────────────────────────────────
+function buildGroupedRecords(records) {
+  const container=document.createElement('div');
+  const grouped={};
+  records.forEach(rec=>{
+    const [year,month]=rec.date.split('-');
+    if(!grouped[year]) grouped[year]={};
+    if(!grouped[year][month]) grouped[year][month]=[];
+    grouped[year][month].push(rec);
+  });
+  Object.keys(grouped).sort((a,b)=>b-a).forEach(year=>{
+    const yearEl=document.createElement('div'); yearEl.className='group-year';
+    const yearH=document.createElement('div'); yearH.className='year-header';
+    yearH.innerHTML=`<span class="year-label">${year}</span><span class="year-arrow">▾</span>`;
+    yearH.addEventListener('click',()=>yearEl.classList.toggle('collapsed'));
+    const yearB=document.createElement('div'); yearB.className='year-body';
+    Object.keys(grouped[year]).sort((a,b)=>b-a).forEach(month=>{
+      const recs=grouped[year][month];
+      const mEl=document.createElement('div'); mEl.className='group-month';
+      const mH=document.createElement('div'); mH.className='month-header';
+      mH.innerHTML=`<span class="month-label">${MONTHS[parseInt(month)-1]}</span><span class="month-count">${recs.length} registro${recs.length!==1?'s':''}</span><span class="year-arrow">▾</span>`;
+      mH.addEventListener('click',()=>mEl.classList.toggle('collapsed'));
+      const mB=document.createElement('div'); mB.className='month-body';
+      recs.forEach(rec=>mB.appendChild(buildRecordCard(rec)));
+      mEl.appendChild(mH); mEl.appendChild(mB); yearB.appendChild(mEl);
+    });
+    yearEl.appendChild(yearH); yearEl.appendChild(yearB); container.appendChild(yearEl);
+  });
+  return container;
+}
+
+function buildRecordCard(rec) {
+  const group=document.createElement('div'); group.className='record-group';
+  group.innerHTML=`<div class="record-date">${rec.categoryLabel} — ${formatDate(rec.date)}${rec.savedBy?' · '+rec.savedBy:''}</div>`;
+  const players=rec.players;
+  const p=Object.values(players).filter(v=>v.status==='P').length;
+  const t=Object.values(players).filter(v=>v.status==='T').length;
+  const a=Object.values(players).filter(v=>v.status==='A').length;
+  const l=Object.values(players).filter(v=>v.status==='L').length;
+  const card=document.createElement('div'); card.className='record-card';
+  const header=document.createElement('div'); header.className='record-card-header';
+  header.innerHTML=`<h4>${Object.keys(players).length} jugadores</h4><div class="record-pills"><span class="pill p">${p} P</span><span class="pill t">${t} T</span><span class="pill a">${a} A</span>${l>0?`<span class="pill l">${l} 🩹</span>`:''}</div>`;
+  const detail=document.createElement('div'); detail.className='record-detail';
+  Object.entries(players).forEach(([name,data])=>{
+    if(!data.status) return;
+    const row=document.createElement('div'); row.className='detail-row';
+    row.innerHTML=`<div><div>${name}</div>${data.obs?`<div class="detail-obs">${data.obs}</div>`:''}</div><span class="detail-status ${data.status}">${statusLabel(data.status,data.obs)}</span>`;
+    detail.appendChild(row);
+  });
+  header.addEventListener('click',()=>detail.classList.toggle('show'));
+  card.appendChild(header); card.appendChild(detail); group.appendChild(card);
+  return group;
 }
 
 // ── EXPORT EXCEL ──────────────────────────────────────────
 function buildExcel(records, filename) {
-  if (!records||records.length===0) { showToast('No hay datos para exportar','#FF4444'); return; }
-  const wb = XLSX.utils.book_new();
-
-  // Hoja 1: Registro completo
-  const rows1 = [['Categoría','Fecha','Jugador','Estado','Observación']];
-  records.forEach(rec => {
-    Object.entries(rec.players).forEach(([name,data]) => {
-      if (!data.status) return;
-      const estado = {P:'Presente',T:'Tarde',L:'Lesionado',A:'Ausente'}[data.status]||'';
-      rows1.push([rec.categoryLabel,rec.date,name,estado,data.obs||'']);
+  if(!records||records.length===0){showToast('No hay datos para exportar','#FF4444');return;}
+  const wb=XLSX.utils.book_new();
+  const rows1=[['Categoría','Fecha','Guardado por','Jugador','Estado','Observación']];
+  records.forEach(rec=>{
+    Object.entries(rec.players).forEach(([name,data])=>{
+      if(!data.status) return;
+      const estado={P:'Presente',T:'Tarde',L:'Lesionado',A:'Ausente'}[data.status]||'';
+      rows1.push([rec.categoryLabel,rec.date,rec.savedBy||'',name,estado,data.obs||'']);
     });
   });
-  const ws1 = XLSX.utils.aoa_to_sheet(rows1);
-  ws1['!cols']=[{wch:14},{wch:13},{wch:22},{wch:12},{wch:20}];
+  const ws1=XLSX.utils.aoa_to_sheet(rows1);
+  ws1['!cols']=[{wch:14},{wch:13},{wch:14},{wch:22},{wch:12},{wch:20}];
   XLSX.utils.book_append_sheet(wb,ws1,'Registro completo');
 
-  // Hoja 2: Por jugador
-  const playerMap = {};
-  const allDates = new Set();
-  records.forEach(rec => {
-    Object.entries(rec.players).forEach(([name,data]) => {
-      if (!data.status) return;
-      if (!playerMap[name]) playerMap[name]={cat:rec.categoryLabel};
-      const e = data.status==='A'&&data.obs?`A - ${data.obs}`:{P:'P',T:'T',L:'L',A:'A'}[data.status]||'';
-      playerMap[name][rec.date]=e;
-      allDates.add(rec.date);
+  const playerMap={};const allDates=new Set();
+  records.forEach(rec=>{
+    Object.entries(rec.players).forEach(([name,data])=>{
+      if(!data.status) return;
+      if(!playerMap[name]) playerMap[name]={cat:rec.categoryLabel};
+      const e=data.status==='A'&&data.obs?`A - ${data.obs}`:{P:'P',T:'T',L:'L',A:'A'}[data.status]||'';
+      playerMap[name][rec.date]=e; allDates.add(rec.date);
     });
   });
-  const sortedDates = Array.from(allDates).sort();
-  const rows2 = [['Jugador','Categoría',...sortedDates]];
+  const sortedDates=Array.from(allDates).sort();
+  const rows2=[['Jugador','Categoría',...sortedDates]];
   Object.entries(playerMap).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([name,data])=>{
     rows2.push([name,data.cat,...sortedDates.map(d=>data[d]||'—')]);
   });
-  const ws2 = XLSX.utils.aoa_to_sheet(rows2);
+  const ws2=XLSX.utils.aoa_to_sheet(rows2);
   ws2['!cols']=[{wch:22},{wch:12},...sortedDates.map(()=>({wch:13}))];
   XLSX.utils.book_append_sheet(wb,ws2,'Por jugador');
 
-  // Hoja 3: Por fecha
-  const dateMap = {};
-  records.forEach(rec => {
-    if (!dateMap[rec.date]) dateMap[rec.date]=[];
+  const dateMap={};
+  records.forEach(rec=>{
+    if(!dateMap[rec.date]) dateMap[rec.date]=[];
     Object.entries(rec.players).forEach(([name,data])=>{
-      if (!data.status) return;
+      if(!data.status) return;
       const estado={P:'Presente',T:'Tarde',L:'Lesionado',A:'Ausente'}[data.status]||'';
-      dateMap[rec.date].push({cat:rec.categoryLabel,name,estado,obs:data.obs||''});
+      dateMap[rec.date].push({cat:rec.categoryLabel,savedBy:rec.savedBy||'',name,estado,obs:data.obs||''});
     });
   });
-  const rows3 = [['Fecha','Categoría','Jugador','Estado','Observación']];
+  const rows3=[['Fecha','Categoría','Guardado por','Jugador','Estado','Observación']];
   Object.keys(dateMap).sort().reverse().forEach(date=>{
-    dateMap[date].forEach(e=>rows3.push([date,e.cat,e.name,e.estado,e.obs]));
+    dateMap[date].forEach(e=>rows3.push([date,e.cat,e.savedBy,e.name,e.estado,e.obs]));
   });
-  const ws3 = XLSX.utils.aoa_to_sheet(rows3);
-  ws3['!cols']=[{wch:13},{wch:14},{wch:22},{wch:12},{wch:20}];
+  const ws3=XLSX.utils.aoa_to_sheet(rows3);
+  ws3['!cols']=[{wch:13},{wch:14},{wch:14},{wch:22},{wch:12},{wch:20}];
   XLSX.utils.book_append_sheet(wb,ws3,'Por fecha');
 
   XLSX.writeFile(wb,`${filename}_${todayStr()}.xlsx`);
@@ -954,3 +1109,4 @@ function buildExcel(records, filename) {
 </script>
 </body>
 </html>
+
