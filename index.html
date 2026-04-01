@@ -792,7 +792,6 @@ function updateStats() {
   $('stat-a').textContent=vals.filter(v=>v.status==='A').length;
   $('stat-l').textContent=vals.filter(v=>v.status==='L').length;
 }
-}
 
 async function saveAttendance() {
   const hasAny=Object.values(attendance).some(v=>v.status!==null);
