@@ -682,8 +682,13 @@ function showCoachHome() {
 async function loadCoachPlayers() {
   const snap = await getDocs(collection(db,'players'));
   coachPlayers=[];
-  snap.forEach(d => { if(d.data().category===activeCat.key) coachPlayers.push(d.data().name); });
-  coachPlayers.sort();
+  snap.forEach(d => {
+    if(d.data().category===activeCat.key) {
+      coachPlayers.push({ name: d.data().name, sortKey: d.data().sortKey || d.data().name });
+    }
+  });
+  coachPlayers.sort((a,b) => a.sortKey.localeCompare(b.sortKey, 'es', {sensitivity:'base'}));
+  coachPlayers = coachPlayers.map(p => p.name);
 }
 
 function openDateModal() {
@@ -827,8 +832,14 @@ async function showGestionarJugadores() {
   const snap=await getDocs(collection(db,'players'));
   coachPlayers=[];
   const playerDocs={};
-  snap.forEach(d=>{if(d.data().category===activeCat.key){coachPlayers.push(d.data().name);playerDocs[d.data().name]=d.id;}});
-  coachPlayers.sort();
+  const playerData=[];
+  snap.forEach(d=>{
+    if(d.data().category===activeCat.key){
+      playerData.push({name:d.data().name, sortKey:d.data().sortKey||d.data().name, docId:d.id});
+    }
+  });
+  playerData.sort((a,b)=>a.sortKey.localeCompare(b.sortKey,'es',{sensitivity:'base'}));
+  playerData.forEach(p=>{ coachPlayers.push(p.name); playerDocs[p.name]=p.docId; });
   body.innerHTML='';
   if(coachPlayers.length===0){body.innerHTML='<div class="no-records">No hay jugadores aún.</div>';return;}
   body.innerHTML=`<div class="players-count">${coachPlayers.length} jugador${coachPlayers.length!==1?'es':''}</div>`;
@@ -1223,5 +1234,3 @@ function buildExcel(records, filename) {
 </script>
 </body>
 </html>
-
-
