@@ -684,11 +684,12 @@ async function loadCoachPlayers() {
   coachPlayers=[];
   snap.forEach(d => {
     if(d.data().category===activeCat.key) {
-      coachPlayers.push({ name: d.data().name, sortKey: d.data().sortKey || d.data().name });
+      const sortKey = d.data().sortKey || d.data().name;
+      coachPlayers.push({ name: d.data().name, displayName: sortKey, sortKey });
     }
   });
   coachPlayers.sort((a,b) => a.sortKey.localeCompare(b.sortKey, 'es', {sensitivity:'base'}));
-  coachPlayers = coachPlayers.map(p => p.name);
+  // Keep full objects so renderPlayerList can show displayName
 }
 
 function openDateModal() {
@@ -715,26 +716,27 @@ async function renderAttendance() {
   attendance={};
   if (!recSnap.empty) {
     const existing = recSnap.docs[0].data().players;
-    coachPlayers.forEach(p => { attendance[p]=existing[p]||{status:null,obs:''}; });
+    coachPlayers.forEach(p => { attendance[p.name] = existing[p.name] || {status:null,obs:''}; });
   } else {
-    coachPlayers.forEach(p => { attendance[p]={status:null,obs:''}; });
+    coachPlayers.forEach(p => { attendance[p.name] = {status:null,obs:''}; });
   }
   renderPlayerList(); updateStats();
 }
 
 function renderPlayerList() {
-  const players = Object.keys(attendance);
   const list = $('player-list');
   list.innerHTML='';
-  if (players.length===0) { list.innerHTML='<div class="no-records">No hay jugadores en esta categoría.</div>'; return; }
-  players.forEach((name,i) => {
-    const st = attendance[name];
+  if (coachPlayers.length===0) { list.innerHTML='<div class="no-records">No hay jugadores en esta categoría.</div>'; return; }
+  coachPlayers.forEach((player, i) => {
+    const name = player.name;
+    const displayName = player.displayName || name;
+    const st = attendance[name] || {status:null, obs:''};
     const card = document.createElement('div');
     card.className='player-card'+(st.status?' is-'+statusClass(st.status):'');
     card.innerHTML=`
       <div class="player-num">${i+1}</div>
       <div class="player-info">
-        <div class="player-name">${name}</div>
+        <div class="player-name">${displayName}</div>
         <div class="player-obs">${st.status==='A'&&st.obs?st.obs:(st.status!=='A'?(st.obs||''):'')}</div>
       </div>
       <div class="status-btns">
@@ -760,7 +762,7 @@ function renderPlayerList() {
   list.querySelectorAll('.sbtn').forEach(btn => {
     btn.addEventListener('click', () => {
       const idx=parseInt(btn.dataset.idx), s=btn.dataset.st;
-      const name=Object.keys(attendance)[idx];
+      const name=coachPlayers[idx].name;
       attendance[name].status=attendance[name].status===s?null:s;
       if(attendance[name].status!=='A') attendance[name].obs='';
       renderPlayerList(); updateStats();
@@ -770,14 +772,15 @@ function renderPlayerList() {
   list.querySelectorAll('.aviso-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const idx=parseInt(btn.dataset.idx), val=btn.dataset.val;
-      const name=Object.keys(attendance)[idx];
+      const name=coachPlayers[idx].name;
       attendance[name].obs=attendance[name].obs===val?'':val;
       renderPlayerList();
     });
   });
   list.querySelectorAll('input[data-idx]').forEach(input => {
     input.addEventListener('input', () => {
-      attendance[Object.keys(attendance)[parseInt(input.dataset.idx)]].obs=input.value;
+      const name=coachPlayers[parseInt(input.dataset.idx)].name;
+      attendance[name].obs=input.value;
     });
   });
 }
@@ -788,6 +791,7 @@ function updateStats() {
   $('stat-t').textContent=vals.filter(v=>v.status==='T').length;
   $('stat-a').textContent=vals.filter(v=>v.status==='A').length;
   $('stat-l').textContent=vals.filter(v=>v.status==='L').length;
+}
 }
 
 async function saveAttendance() {
@@ -839,13 +843,13 @@ async function showGestionarJugadores() {
     }
   });
   playerData.sort((a,b)=>a.sortKey.localeCompare(b.sortKey,'es',{sensitivity:'base'}));
-  playerData.forEach(p=>{ coachPlayers.push(p.name); playerDocs[p.name]=p.docId; });
+  playerData.forEach(p=>{ coachPlayers.push({name:p.name, displayName:p.sortKey, sortKey:p.sortKey}); playerDocs[p.name]=p.docId; });
   body.innerHTML='';
   if(coachPlayers.length===0){body.innerHTML='<div class="no-records">No hay jugadores aún.</div>';return;}
   body.innerHTML=`<div class="players-count">${coachPlayers.length} jugador${coachPlayers.length!==1?'es':''}</div>`;
-  coachPlayers.forEach(name=>{
+  coachPlayers.forEach(player=>{
     const card=document.createElement('div'); card.className='player-mgmt-card';
-    card.innerHTML=`<span class="player-mgmt-name">${name}</span><button class="btn-delete-player" data-name="${name}" data-docid="${playerDocs[name]}">🗑 Eliminar</button>`;
+    card.innerHTML=`<span class="player-mgmt-name">${player.displayName||player.name}</span><button class="btn-delete-player" data-name="${player.name}" data-docid="${playerDocs[player.name]}">🗑 Eliminar</button>`;
     body.appendChild(card);
   });
   body.querySelectorAll('.btn-delete-player').forEach(btn=>{
@@ -861,8 +865,8 @@ async function confirmAddPlayerCoach() {
   const name=$('new-player-name-coach').value.trim();
   if(!name) return;
   try {
-    const docId=`${activeCat.key}_${name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'')}`;
-    await setDoc(doc(db,'players',docId),{name,category:activeCat.key,categoryLabel:activeCat.label});
+    const docId=`${activeCat.key}_${name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'')}`;
+    await setDoc(doc(db,'players',docId),{name, sortKey:name, category:activeCat.key, categoryLabel:activeCat.label});
     await logAction('Agregar jugador',`${name} en ${activeCat.label}`);
     $('add-modal-coach').classList.remove('open');
     showToast(`${name} agregado ✓`);
