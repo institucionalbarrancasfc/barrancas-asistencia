@@ -540,14 +540,11 @@ function buildPlayerCard(player,i,att,prefix,onStatus,onAviso,onObs){
   const name=player.name;
   const st=att[name]||{status:null,obs:''};
   // Check if player trains today
-  const DOW_MAP={0:0,1:1,2:2,3:3,4:4,5:null,6:null}; // JS: 0=Sun,1=Mon...
-  const JS_TO_IDX={1:0,2:1,3:2,4:3,5:4}; // Mon=0,Tue=1,Wed=2,Thu=3,Fri=4
+  const JS_TO_IDX={1:0,2:1,3:2,4:3,5:4};
   let noEntrenaHoy=false;
   if(player.days&&selectedDate){
     const dow=new Date(selectedDate+'T12:00:00').getDay();
-    const idx=JS_TO_IDX[dow]; // undefined for Sat/Sun
-    if(idx!==undefined) noEntranaHoy=!player.days.includes(idx);
-    else noEntrenaHoy=false;
+    const idx=JS_TO_IDX[dow];
     noEntrenaHoy=idx!==undefined&&!player.days.includes(idx);
   }
   const card=document.createElement('div');
