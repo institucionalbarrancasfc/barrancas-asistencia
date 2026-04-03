@@ -167,7 +167,7 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
 .edit-banner strong{font-size:14px;color:var(--text);display:block;margin-top:2px;}
 
 /* PLAYER MANAGEMENT */
-.player-mgmt-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.player-mgmt-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;flex-direction:column;gap:10px;}
 .player-mgmt-name{font-weight:500;font-size:15px;flex:1;}
 .mgmt-actions{display:flex;gap:6px;}
 .btn-delete-player{background:rgba(255,68,68,0.1);border:1px solid rgba(255,68,68,0.3);color:var(--red-light);border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;}
@@ -501,7 +501,15 @@ function showCoachHome(){
 async function loadCoachPlayers(){
   const snap=await getDocs(collection(db,'players'));
   coachPlayers=[];
-  snap.forEach(d=>{if(d.data().category===activeCat.key)coachPlayers.push({name:d.data().name,sortKey:d.data().sortKey||d.data().name,docId:d.id});});
+  snap.forEach(d=>{
+    const dt=d.data();
+    if(dt.category===activeCat.key)
+      coachPlayers.push({
+        name:dt.name, sortKey:dt.sortKey||dt.name, docId:d.id,
+        notes:dt.notes||'',
+        days:dt.days||[0,1,2,3,4] // 0=L,1=M,2=Mi,3=J,4=V — default all
+      });
+  });
   coachPlayers.sort((a,b)=>a.sortKey.localeCompare(b.sortKey,'es',{sensitivity:'base'}));
 }
 
@@ -531,12 +539,25 @@ async function renderAttendance(){
 function buildPlayerCard(player,i,att,prefix,onStatus,onAviso,onObs){
   const name=player.name;
   const st=att[name]||{status:null,obs:''};
+  // Check if player trains today
+  const DOW_MAP={0:0,1:1,2:2,3:3,4:4,5:null,6:null}; // JS: 0=Sun,1=Mon...
+  const JS_TO_IDX={1:0,2:1,3:2,4:3,5:4}; // Mon=0,Tue=1,Wed=2,Thu=3,Fri=4
+  let noEntrenaHoy=false;
+  if(player.days&&selectedDate){
+    const dow=new Date(selectedDate+'T12:00:00').getDay();
+    const idx=JS_TO_IDX[dow]; // undefined for Sat/Sun
+    if(idx!==undefined) noEntranaHoy=!player.days.includes(idx);
+    else noEntrenaHoy=false;
+    noEntrenaHoy=idx!==undefined&&!player.days.includes(idx);
+  }
   const card=document.createElement('div');
   card.className='player-card'+(st.status?' is-'+sClass(st.status):'');
   card.innerHTML=`
     <div class="player-num">${i+1}</div>
     <div class="player-info">
       <div class="player-name">${player.sortKey||name}</div>
+      ${noEntrenaHoy&&!st.status?'<div style="font-size:11px;color:var(--muted);font-style:italic;">⚠️ No entrena este día</div>':''}
+      ${player.notes&&!noEntrenaHoy?`<div style="font-size:11px;color:var(--muted);">${player.notes}</div>`:''}
       <div class="player-obs">${st.obs||''}</div>
     </div>
     <div class="status-btns">
@@ -671,11 +692,69 @@ async function showGestionarJugadores(){
   body.innerHTML='';
   if(coachPlayers.length===0){body.innerHTML='<div class="no-records">No hay jugadores aún.</div>';return;}
   body.innerHTML=`<div class="players-count">${coachPlayers.length} jugador${coachPlayers.length!==1?'es':''}</div>`;
+
+  const DAY_LABELS=['L','M','Mi','J','V'];
+
   coachPlayers.forEach(player=>{
-    const card=document.createElement('div');card.className='player-mgmt-card';
-    card.innerHTML=`<span class="player-mgmt-name">${player.sortKey||player.name}</span><div class="mgmt-actions"><button class="btn-edit-player" data-docid="${player.docId}" data-name="${player.name}">✏️</button><button class="btn-delete-player" data-docid="${player.docId}" data-name="${player.name}">🗑</button></div>`;
+    const card=document.createElement('div');
+    card.className='player-mgmt-card';
+    card.style.cssText='flex-direction:column;align-items:stretch;gap:10px;';
+
+    // Top row: name + action buttons
+    const topRow=document.createElement('div');
+    topRow.style.cssText='display:flex;align-items:center;justify-content:space-between;gap:10px;';
+    topRow.innerHTML=`<span class="player-mgmt-name">${player.sortKey||player.name}</span><div class="mgmt-actions"><button class="btn-edit-player" data-docid="${player.docId}" data-name="${player.name}">✏️</button><button class="btn-delete-player" data-docid="${player.docId}" data-name="${player.name}">🗑</button></div>`;
+    card.appendChild(topRow);
+
+    // Days row
+    const daysRow=document.createElement('div');
+    daysRow.style.cssText='display:flex;gap:6px;align-items:center;';
+    const daysLabel=document.createElement('span');
+    daysLabel.style.cssText='font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;flex-shrink:0;';
+    daysLabel.textContent='Días:';
+    daysRow.appendChild(daysLabel);
+    DAY_LABELS.forEach((label,idx)=>{
+      const pill=document.createElement('button');
+      const active=player.days.includes(idx);
+      pill.style.cssText=`width:32px;height:32px;border-radius:8px;border:1px solid ${active?'var(--red)':'var(--border)'};background:${active?'rgba(212,43,43,0.2)':'var(--dark)'};color:${active?'var(--text)':'var(--muted)'};font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;-webkit-appearance:none;`;
+      pill.textContent=label;
+      pill.dataset.idx=idx;
+      pill.dataset.docid=player.docId;
+      pill.addEventListener('click',async()=>{
+        const newDays=player.days.includes(idx)?player.days.filter(d=>d!==idx):[...player.days,idx].sort();
+        player.days=newDays;
+        await setDoc(doc(db,'players',player.docId),{days:newDays},{merge:true});
+        pill.style.borderColor=newDays.includes(idx)?'var(--red)':'var(--border)';
+        pill.style.background=newDays.includes(idx)?'rgba(212,43,43,0.2)':'var(--dark)';
+        pill.style.color=newDays.includes(idx)?'var(--text)':'var(--muted)';
+      });
+      daysRow.appendChild(pill);
+    });
+    card.appendChild(daysRow);
+
+    // Notes row
+    const notesRow=document.createElement('div');
+    notesRow.style.cssText='display:flex;gap:8px;align-items:center;';
+    const notesInput=document.createElement('input');
+    notesInput.type='text';
+    notesInput.placeholder='Observación del jugador...';
+    notesInput.value=player.notes||'';
+    notesInput.style.cssText='flex:1;background:var(--dark);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:\'DM Sans\',sans-serif;font-size:13px;outline:none;';
+    let notesTimer;
+    notesInput.addEventListener('input',()=>{
+      clearTimeout(notesTimer);
+      notesTimer=setTimeout(async()=>{
+        player.notes=notesInput.value;
+        await setDoc(doc(db,'players',player.docId),{notes:notesInput.value},{merge:true});
+        showToast('Observación guardada ✓');
+      },800);
+    });
+    notesRow.appendChild(notesInput);
+    card.appendChild(notesRow);
+
     body.appendChild(card);
   });
+
   body.querySelectorAll('.btn-delete-player').forEach(btn=>{
     btn.addEventListener('click',()=>{
       playerToDelete={name:btn.dataset.name,docId:btn.dataset.docid};
