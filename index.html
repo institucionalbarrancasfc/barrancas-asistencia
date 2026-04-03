@@ -290,12 +290,11 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
     <div class="top-bar-right"><button class="btn-back-home" id="btn-go-home">← Inicio</button><button class="btn-logout" id="btn-logout-coach">Salir</button></div>
   </div>
   <div class="date-banner"><span>Fecha cargada</span><strong id="coach-date-display">—</strong></div>
-  <div class="stats-row">
+  <div class="stats-row" style="grid-template-columns:repeat(4,1fr);">
     <div class="stat-cell pres"><div class="num" id="stat-p">0</div><div class="lbl">Presentes</div></div>
     <div class="stat-cell tard"><div class="num" id="stat-t">0</div><div class="lbl">Tarde</div></div>
     <div class="stat-cell aus"><div class="num" id="stat-a">0</div><div class="lbl">Ausentes</div></div>
     <div class="stat-cell les"><div class="num" id="stat-l">0</div><div class="lbl">Lesionados</div></div>
-    <div class="stat-cell"><div class="num" id="stat-n" style="color:var(--muted);">0</div><div class="lbl">No entrena</div></div>
   </div>
   <div class="player-list" id="player-list"></div>
   <div class="save-bar"><button class="btn-save" id="btn-save">GUARDAR ASISTENCIA</button><div class="save-msg" id="save-msg"></div></div>
@@ -389,7 +388,7 @@ const showToast=(msg,color)=>{const t=$('toast');t.textContent=msg;t.style.backg
 const catByKey=k=>CATEGORIES.find(c=>c.key===k);
 const hashPass=s=>btoa(encodeURIComponent(s));
 const sClass=s=>({P:'presente',T:'tarde',A:'ausente',L:'lesionado',N:'noentrena'}[s]||'');
-const sLabel=(s,obs)=>s==='P'?'Presente':s==='T'?'Tarde':s==='L'?'🩹 Lesionado':s==='N'?'📅 No entrena':s==='A'?(obs?`Ausente · ${obs}`:'Ausente'):'';
+const sLabel=(s,obs,avisoObs)=>s==='P'?'Presente':s==='T'?'Tarde':s==='L'?'🩹 Lesionado':s==='N'?'📅 No entrena':s==='A'?(avisoObs||obs?`Ausente · ${avisoObs||obs}`:'Ausente'):'';
 
 async function logAction(action,detail=''){
   if(!currentUser)return;
@@ -538,26 +537,28 @@ function buildPlayerCard(player,i,att,prefix,onStatus,onAviso,onObs){
     <div class="player-num">${i+1}</div>
     <div class="player-info">
       <div class="player-name">${player.sortKey||name}</div>
-      <div class="player-obs">${st.status==='A'&&st.obs?st.obs:(st.status!=='A'?(st.obs||''):'')}</div>
+      <div class="player-obs">${st.obs||''}</div>
     </div>
     <div class="status-btns">
       <button class="sbtn ${st.status==='P'?'active-p':''}" data-idx="${i}" data-st="P">✓</button>
       <button class="sbtn ${st.status==='T'?'active-t':''}" data-idx="${i}" data-st="T">⏱</button>
       <button class="sbtn ${st.status==='A'?'active-a':''}" data-idx="${i}" data-st="A">✕</button>
       <button class="sbtn ${st.status==='L'?'active-l':''}" data-idx="${i}" data-st="L">🩹</button>
-      <button class="sbtn ${st.status==='N'?'active-n':''}" data-idx="${i}" data-st="N" title="No entrena este día">📅</button>
     </div>`;
   const obsRow=document.createElement('div');
   obsRow.className='obs-row'+(st.status?' show':'');
   obsRow.id=prefix+'obs-'+i;
   if(st.status==='A'){
-    obsRow.innerHTML=`<div class="aviso-btns">
-      <button class="aviso-btn ${st.obs==='Con aviso'?'active':''}" data-idx="${i}" data-val="Con aviso">📩 Con aviso</button>
-      <button class="aviso-btn ${st.obs==='Sin aviso'?'active':''}" data-idx="${i}" data-val="Sin aviso">🔕 Sin aviso</button>
-      <button class="aviso-btn ${st.obs==='No entrena este día'?'active':''}" data-idx="${i}" data-val="No entrena este día">📅 No entrena</button>
-    </div>`;
-  }else if(st.status&&st.status!=='N'){
-    obsRow.innerHTML=`<input type="text" placeholder="Observación (opcional)" value="${st.obs||''}" data-idx="${i}">`;
+    // Aviso buttons + free text obs field
+    const avisoSel=st.avisoObs||'';
+    obsRow.innerHTML=`<div class="aviso-btns" style="margin-bottom:8px;">
+      <button class="aviso-btn ${st.avisoObs==='Con aviso'?'active':''}" data-idx="${i}" data-val="Con aviso">📩 Con aviso</button>
+      <button class="aviso-btn ${st.avisoObs==='Sin aviso'?'active':''}" data-idx="${i}" data-val="Sin aviso">🔕 Sin aviso</button>
+      <button class="aviso-btn ${st.avisoObs==='No entrena este día'?'active':''}" data-idx="${i}" data-val="No entrena este día">📅 No entrena</button>
+    </div>
+    <input type="text" placeholder="Observación (opcional)" value="${st.obs||''}" data-idx="${i}" data-field="obs">`;
+  }else if(st.status){
+    obsRow.innerHTML=`<input type="text" placeholder="Observación (opcional)" value="${st.obs||''}" data-idx="${i}" data-field="obs">`;
   }
   // Wire events
   card.querySelectorAll('.sbtn').forEach(btn=>{
@@ -565,20 +566,22 @@ function buildPlayerCard(player,i,att,prefix,onStatus,onAviso,onObs){
       const idx=parseInt(btn.dataset.idx),s=btn.dataset.st;
       const n=player.name;
       att[n].status=att[n].status===s?null:s;
-      if(att[n].status!=='A')att[n].obs='';
+      // Only clear avisoObs when leaving A, keep obs always
+      if(att[n].status!=='A') att[n].avisoObs='';
       onStatus();
       if(att[n].status)setTimeout(()=>{const r=document.getElementById(prefix+'obs-'+idx);if(r)r.classList.add('show');},10);
     });
   });
   obsRow.querySelectorAll('.aviso-btn').forEach(btn=>{
     btn.addEventListener('click',()=>{
-      const idx=parseInt(btn.dataset.idx),val=btn.dataset.val;
-      att[player.name].obs=att[player.name].obs===val?'':val;
+      const val=btn.dataset.val;
+      att[player.name].avisoObs=att[player.name].avisoObs===val?'':val;
       onAviso();
     });
   });
-  const inp=obsRow.querySelector('input[data-idx]');
-  if(inp)inp.addEventListener('input',()=>{att[player.name].obs=inp.value;if(onObs)onObs();});
+  obsRow.querySelectorAll('input[data-field="obs"]').forEach(inp=>{
+    inp.addEventListener('input',()=>{att[player.name].obs=inp.value;if(onObs)onObs();});
+  });
   return {card,obsRow};
 }
 
@@ -597,7 +600,6 @@ function updateStats(){
   $('stat-t').textContent=v.filter(x=>x.status==='T').length;
   $('stat-a').textContent=v.filter(x=>x.status==='A').length;
   $('stat-l').textContent=v.filter(x=>x.status==='L').length;
-  $('stat-n').textContent=v.filter(x=>x.status==='N').length;
 }
 
 async function saveAttendance(){
@@ -627,7 +629,7 @@ async function showHistorial(){
 // ── EDIT RECORD ───────────────────────────────────────────
 function openEditRecord(rec,source){
   editingRec=rec;editSource=source;editAttendance={};
-  Object.entries(rec.players).forEach(([n,d])=>{editAttendance[n]={status:d.status,obs:d.obs||''};});
+  Object.entries(rec.players).forEach(([n,d])=>{editAttendance[n]={status:d.status,obs:d.obs||'',avisoObs:d.avisoObs||''};});
   $('edit-date-label').textContent=`${rec.categoryLabel} — ${formatDate(rec.date)}`;
   renderEditList();
   showScreen('edit-record-screen');
@@ -809,7 +811,8 @@ function buildRecordCard(rec,source){
   Object.entries(players).forEach(([name,data])=>{
     if(!data.status)return;
     const row=document.createElement('div');row.className='detail-row';
-    row.innerHTML=`<div><div>${name}</div>${data.obs?`<div class="detail-obs">${data.obs}</div>`:''}</div><span class="detail-status ${data.status}">${sLabel(data.status,data.obs)}</span>`;
+    const subInfo=[data.avisoObs,data.obs].filter(Boolean).join(' · ');
+    row.innerHTML=`<div><div>${name}</div>${subInfo?`<div class="detail-obs">${subInfo}</div>`:''}</div><span class="detail-status ${data.status}">${sLabel(data.status,data.obs,data.avisoObs)}</span>`;
     detail.appendChild(row);
   });
   header.addEventListener('click',()=>detail.classList.toggle('show'));
