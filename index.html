@@ -337,6 +337,8 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
 <div class="modal-overlay" id="delete-modal"><div class="modal-box"><h3>ELIMINAR JUGADOR</h3><p>¿Confirmás que querés eliminar a <strong id="delete-player-name" style="color:var(--text)"></strong>?</p><div class="modal-actions"><button class="btn-cancel" id="btn-cancel-delete">Cancelar</button><button class="btn-confirm btn-confirm-danger" id="btn-confirm-delete">ELIMINAR</button></div></div></div>
 <div class="modal-overlay" id="create-user-modal"><div class="modal-box"><h3>CREAR USUARIO</h3><input type="text" id="new-user-username" placeholder="Usuario (ej: carlos)" autocomplete="off"><input type="text" id="new-user-displayname" placeholder="Nombre completo"><input type="password" id="new-user-password" placeholder="Contraseña"><div style="margin-bottom:12px;"><div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Categorías</div><div id="new-user-cats-checkboxes" style="display:flex;flex-wrap:wrap;gap:8px;"></div></div><div class="modal-actions"><button class="btn-cancel" id="btn-cancel-create-user">Cancelar</button><button class="btn-confirm btn-confirm-blue" id="btn-confirm-create-user">CREAR</button></div></div></div>
 <div class="modal-overlay" id="edit-cats-modal"><div class="modal-box"><h3>EDITAR CATEGORÍAS</h3><p>Categorías de <strong id="edit-cats-username" style="color:var(--text)"></strong></p><div id="edit-cats-checkboxes" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;"></div><div class="modal-actions"><button class="btn-cancel" id="btn-cancel-edit-cats">Cancelar</button><button class="btn-confirm btn-confirm-blue" id="btn-confirm-edit-cats">GUARDAR</button></div></div></div>
+<div class="modal-overlay" id="edit-user-name-modal"><div class="modal-box"><h3>EDITAR NOMBRE</h3><p>Nombre visible del usuario</p><input type="text" id="edit-user-name-input" placeholder="Nombre completo"><div class="modal-actions"><button class="btn-cancel" id="btn-cancel-edit-user-name">Cancelar</button><button class="btn-confirm btn-confirm-blue" id="btn-confirm-edit-user-name">GUARDAR</button></div></div></div>
+
 <div class="modal-overlay" id="reset-pass-modal"><div class="modal-box"><h3>RESETEAR CONTRASEÑA</h3><p>Nueva contraseña para <strong id="reset-user-name" style="color:var(--text)"></strong></p><input type="password" id="new-password-input" placeholder="Nueva contraseña"><div class="modal-actions"><button class="btn-cancel" id="btn-cancel-reset">Cancelar</button><button class="btn-confirm btn-confirm-blue" id="btn-confirm-reset">GUARDAR</button></div></div></div>
 
 <div class="toast" id="toast"></div>
@@ -375,7 +377,7 @@ let currentUser=null, activeCat=null;
 let attendance={}, coachPlayers=[], selectedDate='';
 let adminTab='asistencia', allAdminRecords=[], coachHistRecords=[];
 let playerToDelete=null, playerToEdit=null;
-let userToReset=null, userToEditCats=null, allUsers=[];
+let userToReset=null, userToEditCats=null, userToEditName=null, allUsers=[];
 let editingRec=null, editAttendance={}, editSource='historial';
 
 // ── Helpers ───────────────────────────────────────────────
@@ -428,7 +430,8 @@ function setupListeners(){
   $('btn-confirm-create-user').addEventListener('click',confirmCreateUser);
   $('btn-cancel-edit-cats').addEventListener('click',()=>$('edit-cats-modal').classList.remove('open'));
   $('btn-confirm-edit-cats').addEventListener('click',confirmEditCats);
-  $('btn-cancel-reset').addEventListener('click',()=>$('reset-pass-modal').classList.remove('open'));
+  $('btn-cancel-edit-user-name').addEventListener('click',()=>$('edit-user-name-modal').classList.remove('open'));
+  $('btn-confirm-edit-user-name').addEventListener('click',confirmEditUserName);
   $('btn-confirm-reset').addEventListener('click',confirmResetPassword);
   $('btn-export-coach').addEventListener('click',()=>{logAction('Exportar Excel',activeCat?.label||'');buildExcel(coachHistRecords,`asistencia_${(activeCat?.label||'').toLowerCase().replace(/\s/g,'_')}`);});
   $('btn-export-admin').addEventListener('click',()=>{logAction('Exportar Excel','Todas');buildExcel(allAdminRecords,'asistencia_barrancas_todas');});
@@ -902,10 +905,15 @@ function buildUserCard(u){
   let catLabels='Sin categoría';
   if(Array.isArray(u.categories)&&u.categories.length>0)catLabels=u.categories.map(k=>catByKey(k)?.label||k).join(', ');
   else if(u.catKey)catLabels=catByKey(u.catKey)?.label||u.catKey;
-  card.innerHTML=`<div class="user-card-top"><div class="user-card-info"><h4>${u.displayName||u.id} <span class="user-status-badge ${u.active?'badge-active':'badge-inactive'}">${u.active?'Activo':'Inactivo'}</span></h4><p>@${u.id} · ${catLabels}</p></div><div class="user-actions"><button class="btn-sm btn-sm-blue" data-uid="${u.id}" data-name="${u.displayName||u.id}" data-action="editcats">✏️ Categorías</button><button class="btn-sm btn-sm-blue" data-uid="${u.id}" data-name="${u.displayName||u.id}" data-action="reset">🔑 Pass</button><button class="btn-sm ${u.active?'btn-sm-red':'btn-sm-gray'}" data-uid="${u.id}" data-active="${u.active}" data-action="toggle">${u.active?'Desactivar':'Activar'}</button></div></div>`;
+  card.innerHTML=`<div class="user-card-top"><div class="user-card-info"><h4>${u.displayName||u.id} <span class="user-status-badge ${u.active?'badge-active':'badge-inactive'}">${u.active?'Activo':'Inactivo'}</span></h4><p>@${u.id} · ${catLabels}</p></div><div class="user-actions"><button class="btn-sm btn-sm-blue" data-uid="${u.id}" data-name="${u.displayName||u.id}" data-action="editname">✏️ Nombre</button><button class="btn-sm btn-sm-blue" data-uid="${u.id}" data-name="${u.displayName||u.id}" data-action="editcats">📋 Categorías</button><button class="btn-sm btn-sm-blue" data-uid="${u.id}" data-name="${u.displayName||u.id}" data-action="reset">🔑 Pass</button><button class="btn-sm ${u.active?'btn-sm-red':'btn-sm-gray'}" data-uid="${u.id}" data-active="${u.active}" data-action="toggle">${u.active?'Desactivar':'Activar'}</button></div></div>`;
   card.querySelectorAll('[data-action]').forEach(btn=>{
     btn.addEventListener('click',async()=>{
-      if(btn.dataset.action==='reset'){userToReset={id:btn.dataset.uid,name:btn.dataset.name};$('reset-user-name').textContent=btn.dataset.name;$('new-password-input').value='';$('reset-pass-modal').classList.add('open');}
+      if(btn.dataset.action==='editname'){
+        userToEditName={id:btn.dataset.uid,name:btn.dataset.name};
+        $('edit-user-name-input').value=btn.dataset.name;
+        $('edit-user-name-modal').classList.add('open');
+        $('edit-user-name-input').focus();
+      } else if(btn.dataset.action==='reset'){userToReset={id:btn.dataset.uid,name:btn.dataset.name};$('reset-user-name').textContent=btn.dataset.name;$('new-password-input').value='';$('reset-pass-modal').classList.add('open');}
       else if(btn.dataset.action==='toggle'){const na=btn.dataset.active==='true'?false:true;await setDoc(doc(db,'users',btn.dataset.uid),{active:na},{merge:true});showToast(na?'Activado':'Desactivado');await loadAdminTab();}
       else if(btn.dataset.action==='editcats'){
         const u2=allUsers.find(x=>x.id===btn.dataset.uid);
@@ -952,6 +960,18 @@ async function confirmEditCats(){
   if(cats.length===0){showToast('Elegí al menos una categoría','#FF4444');return;}
   try{await setDoc(doc(db,'users',userToEditCats.id),{categories:cats},{merge:true});$('edit-cats-modal').classList.remove('open');showToast('Categorías actualizadas ✓');userToEditCats=null;await loadAdminTab();}
   catch(e){showToast('Error','#FF4444');}
+}
+
+async function confirmEditUserName(){
+  const newName=$('edit-user-name-input').value.trim();
+  if(!newName||!userToEditName){showToast('Ingresá un nombre','#FF4444');return;}
+  try{
+    await setDoc(doc(db,'users',userToEditName.id),{displayName:newName},{merge:true});
+    $('edit-user-name-modal').classList.remove('open');
+    showToast('Nombre actualizado ✓');
+    userToEditName=null;
+    await loadAdminTab();
+  }catch(e){showToast('Error al guardar','#FF4444');}
 }
 
 async function confirmResetPassword(){
